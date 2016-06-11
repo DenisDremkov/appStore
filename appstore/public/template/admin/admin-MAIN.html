@@ -1,0 +1,19 @@
+
+<!-- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! inspect-admin -->
+
+<div id="admin_wrap" ng-controller = "adminMainCtrl">
+	
+	<ul class="nav nav-tabs nav-justified">
+		<li ng-click="toggleTabs('products', $event)" ng-class = "(currentTab === 'products')? 'active' : ''" class="active">
+			<a href="#" onclick="return false">товары</a>
+		</li>
+		<li ng-click="toggleTabs('users', $event)" ng-class = "(currentTab === 'users')? 'active' : ''">
+			<a href="#" onclick="return false">пользователи</a>
+		</li>
+		<li ng-click="toggleTabs('analitika', $event)" ng-class = "(currentTab === 'analitika')? 'active' : ''">
+			<a href="#" onclick="return false">аналитка</a>
+		</li>
+	</ul>
+
+	<div id="admin_view" ng-include = "currentTemplate"></div>	
+</div>

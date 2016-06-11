@@ -1,0 +1,48 @@
+
+@font-face {
+    font-family:"homizio_nova_regular";
+    src: url(../fonts/homizio_nova_regular.otf);
+    src: url(../fonts/homizio_nova_regular.ttf);
+}
+
+@font-face {
+    font-family:"homizio_nova_light_italic";
+    src: url(../fonts/homizio_nova_light_italic.ttf);
+    src: url(../fonts/homizio_nova_light_italic.otf);
+}
+
+@font-face {
+    font-family:"homizio_nova_light";
+    src: url(../fonts/homizio_nova_light.ttf);
+    src: url(../fonts/homizio_nova_light.otf);
+}
+
+@font-face {
+    font-family:"homizio_nova_italic";
+    src: url(../fonts/homizio_nova_italic.otf);
+    src: url(../fonts/homizio_nova_italic.ttf);
+}
+
+
+
+@font-face {
+    font-family: 'svgfont';
+    src: url('../fonts/font-icon/all_icon.eot');
+    src: url('../fonts/font-icon/all_icon.eot') format('embedded-opentype'),
+         url('../fonts/font-icon/all_icon.woff2') format('woff2'),
+         url('../fonts/font-icon/all_icon.woff') format('woff'),
+         url('../fonts/font-icon/all_icon.ttf') format('truetype'),
+         url('../fonts/font-icon/all_icon.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+
+
+
+
+
+
+
+

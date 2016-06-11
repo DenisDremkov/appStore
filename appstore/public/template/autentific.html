@@ -1,0 +1,98 @@
+
+
+<div id="autentif_wrap" class="clearfloat" ng-controller="autentificCtrl">		
+	<span id="userLogin" ng-show = "rootUser.rights">{{rootUser.username}} </span>		
+	
+	<button id="log_in" ng-click = "showLoginForm()" ng-show="activItems.private_account">
+		<i class="fa fa-user" aria-hidden="true"></i>
+		<span>Войдите в личный кабинет</span>
+	</button>
+	
+	<div id="avatar_img_wrap">
+		<img  ng-show = "rootUser.rights" ng-src="./../img/avatars/{{rootUser.avatarId}}" alt="avatar">
+	</div>			
+	
+	<button id="basket" ng-show = "rootUser.rights === 'user'">Корзина <i class="fa fa-shopping-basket" aria-hidden="true"></i></button>
+	
+	<div id="user_product_basket">
+		<table>
+			<tr ng-repeat = "product in rootUser.basket">
+				<td>{{$index+1}}</td>
+				<td>{{product.brand}}</td>
+				<td>{{product.model}}</td>
+				<td>{{product.price}}</td>
+				<td>
+					<button>
+						<i class="fa fa-trash-o" aria-hidden="true"></i>
+					</button>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<button id="log_out" ng-show = "rootUser.rights" ng-click = "logOut()"><i class="fa fa-sign-out" aria-hidden="true"></i></button>
+
+	<div id="login_main" ng-show = "activItems.loginMain">		
+		
+		<ul class="clearfloat">
+			<li ng-click = "toggleTabs('loginForm')" ng-class="(activItems.tab_login)? 'tab_login_active' : ''">
+				<span>Вход</span>
+			</li>
+			<li ng-click = "toggleTabs('registrForm')" ng-class="(activItems.tab_registr)? 'tab_login_active' : ''">
+				<span>Регистрация</span>
+			</li>
+		</ul>	
+
+		<form id="login_form" ng-show = "activItems.loginForm">	
+			<input ng-model="user.username" class = "form-control" type="text" placeholder="логин" required autocomplete="off"><br>
+			<input ng-model="user.password" class = "form-control" type="password" placeholder="пароль" required><br>
+			<button ng-click = "login()">
+				<span>войти</span>
+				<i class = "fa fa-spinner fa-spin" ng-show = "activItems.log_in_spinner"></i>
+			</button><br>
+			<input type="checkbox" ng-model = "user.session" ng-disabled = "user.username === 'admin'">
+			<span>запомнить меня</span>
+		</form>
+
+		<form id="registr_form" name="registrForm" ng-show = "activItems.registrForm" novalidate>
+
+			<div class="row">
+
+				<div class="col-xs-6">
+					<div id="select_avatar">
+						<div class="img_wrap">
+							<img ngf-thumbnail="avatarImg || 'img/avatars/avatar.jpg'">
+							<div ngf-select ng-model="avatarImg" name="file" ngf-pattern="'image/*'" ngf-accept="'image/*'" ngf-max-size="1MB" ngf-min-height="0"><i class="fa fa-plus" aria-hidden="true"></i></div>
+						</div>
+	
+					</div>
+				</div>
+
+				<div class="col-xs-6">
+					<label>	
+						<input type="text" class = "form-control" name="regLogin" ng-model="user.username"   required autocomplete="off"/>
+						<span ng-show="registrForm.regLogin.$error.required">введите логин</span> 
+					</label><br>
+					<label>
+						<input type="password" class = "form-control" name ="regPassword" ng-model="user.password"  required>
+						<span ng-show="registrForm.regPassword.$error.required">введите пароль</span> 
+					</label><br>
+					<label>
+						<input type="password" class = "form-control" name ="regPasswordRep" ng-model="user.passwordRep"  required>
+						<span ng-show="registrForm.regPasswordRep.$error.required">введите пароль повторно</span> 
+					</label><br>						
+					<label>
+						<input type="email" class = "form-control" name="regEmail" ng-model="user.email"  placeholder="user@mail.com" required ng-pattern="/^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$/"><br>					
+						<span ng-show="registrForm.regEmail.$error.required">введите e-mail</span>
+						<span ng-show="registrForm.regEmail.$error.pattern">формат: user@mail.com</span>  
+					</label><br>
+				</div>	
+			</div>
+			<!-- <input class="message_box" ng-class = "(message.registr_success_msg)? 'success_msg' : ''" ng-model = "message.registr" value="{{message.registr}}" disabled><br> -->
+			<input type="submit" value="зарегестрироваться" id="btn_registr" ng-click = "registr()" ng-disabled="registrForm.$invalid"><br>
+		</form>
+		
+		<button class="btn_close_login" ng-click = "closeLoginForm()"><i class="fa fa-times"></i></button>
+
+	</div>		
+</div>

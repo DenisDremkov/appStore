@@ -1,0 +1,38 @@
+
+angular.module('ProductsInfoCtrl',[])
+
+.controller('productsInfoCtrl', ['$scope', '$http', 'productsInfoFactory',  function($scope, $http, productsInfoFactory) {
+	$scope.currentProduct = undefined;
+	$scope.userComment = undefined;
+	$scope.userCommentLength = undefined;
+	$scope.productComments = undefined;
+	$scope.reitObj = {};
+	$scope.reitObj.val = 3.5;
+	$scope.activeView = {show : 'options'};
+	$scope.infoMessage = undefined;  
+	$scope.setComment = function() {
+		productsInfoFactory.setComment($scope, $scope.data.url.setComment)
+	};
+	$scope.toggleInfoView = function(nameView, event) {
+		event.preventDefault();
+		$scope.activeView.show = nameView;
+	};
+	$scope.inspectLength	 = function() {
+		$scope.userCommentLength = $scope.userComment.length;
+		if ($scope.userCommentLength < 300 && $scope.userCommentLength >= 0) {
+			$scope.infoMessage = 300 - $scope.userCommentLength;
+			console.log($scope.infoMessage)
+		}
+		else {
+			$scope.infoMessage = "большое сообщение"
+		}
+	}
+	$scope.$on('showInfoProduct', function(event, product) {
+		if (true) {}
+		productsInfoFactory.showInfo($scope, product)
+	})
+}]);
+
+
+
+

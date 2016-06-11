@@ -1,0 +1,107 @@
+<div ng-controller = "productsMainCtrl">
+	в отзыв добавить оценку!!!!!!!!!!!!!!!!!
+	при клике в портфолио на проект должен выкатыватся квадратик который потом увеличивается и внем краткая инфа
+	<div id="choice_wrap">
+		
+		<ul id="select_product" class="clearfloat">
+			<li>
+				<a href="#/products/tablet" ng-click = "toggleProducts('tablet',$event)" ng-class ="(data.activeItems.currentProducts === 'tablet')? 'current_products' : ''">
+					<img src="../../img/admin/tablet.png" alt=""><br>
+					<!-- <i class="fa fa-tablet" aria-hidden="true"></i> -->
+					<span>		планшеты</span>
+				</a>
+			</li>
+			<li>
+				<a href="#/products/laptop" ng-click = "toggleProducts('laptop',$event)" ng-class ="(data.activeItems.currentProducts === 'laptop')? 'current_products' : ''">
+					<img src="../../img/admin/laptop.png" alt=""><br>
+					<!-- <i class="fa fa-laptop" aria-hidden="true"> -->
+					</i><span>		ноутбуки</span>
+				</a>
+			</li>
+		</ul>
+
+		<div id="select_bar">
+			<ul>
+				<li>
+					<a href="#"  class="nav_bar" ng-click ="toggleBar('sale', $event)" ng-class = "(data.activeItems.productsBar === 'sale')? 'bar_item_active' : ''">
+						<i class="fa fa-list" aria-hidden="true"></i>
+						<!-- <i class="fa fa-exclamation"></i> -->
+					</a>
+				</li>
+				<li>
+					<a href="#"  class="nav_bar" ng-click ="toggleBar('search', $event)" ng-class = "(data.activeItems.productsBar === 'search')? 'bar_item_active' : ''">
+						<i class="fa fa-search"></i>
+					</a>
+				</li>
+				<li ng-show = "data.compareProducts[0]">
+					<a href="#"  class="nav_bar" ng-click ="toggleBar('compare', $event)" ng-class = "(data.activeItems.productsBar === 'compare')? 'bar_item_active' : ''">
+						<i class="fa fa-balance-scale"></i>
+					</a>
+				</li>
+				<li ng-show = "data.currentProductInfo">
+					<a href="#"  class="nav_bar" ng-click ="toggleBar('info', $event)" ng-class = "(data.activeItems.productsBar === 'info')? 'bar_item_active' : ''">
+						<i class="fa fa-info"></i>
+					</a>
+				</li>
+			</ul>
+			
+			<div class="bar_page_wrap">
+			
+				<div ng-include = "data.url.bar" class="bar_page_animate"></div>
+			</div>
+		</div>
+
+	</div>
+
+	<div id="list_wrap" ng-show = "data.activeItems.mainList">
+		
+		<div class="pagination_wrap clearfloat">
+			<pagination amountPages="{{data.amountPages}}"><pagination>	
+		</div>
+
+		<div class="row">
+			<div class="col-xs-3 col_custom" ng-repeat="product in view_mainList | filter:data.search.searchBrend | filter:data.search.searchModel">
+				<div class="products_item">
+					<span ng-show = "product.sale.bool" class="sale">акция</span>
+					<div class="colours_wrap">
+						<!-- <div ng-repeat></div> -->
+					</div>
+					<div class="img_wrap">
+						<img ng-src="../img/small/{{product.img.small}}" alt="img">
+						<popup-img path-img = {{product.img.big}} title="увеличить изображение"></popup-img>	
+					</div>
+					<h2>
+						<span>{{product.brand}}</span><br>
+						{{product.model}}
+						<b>{{product.price}} грн.</b>
+					</h2>
+					<div class="star_reiting_wrap">
+						<star-reiting  set-reiting = "{{product.raiting.val}}" id-product = "{{product._id}}" kind-product = "{{product.kind}}"></star-reiting>
+						<span ng-class ="(rootUser.objRaiting[product._id])? 'raiting_prev_session' : '' ">{{product.raiting.val}}</span> 
+					</div>
+					
+					<button class="btn_compare" ng-class = "(data.checkedButtonsCompare[product._id])? 'btn_checked' : '' "	title="добавить к сравнению" ng-click = "addCompare(product)">
+						<i class="fa fa-balance-scale"></i>
+						<i class="fa fa-check-circle-o" aria-hidden="true" ></i>
+					</button>
+					<button class="btn_info"	title="подробная информация" ng-click = "showInfo(product)"><i class="fa fa-info"></i></button>
+					<!-- ng-show = "rootUser.rights === 'user'" -->
+					<button  class="btn_basket" ng-class = "(data.checkedButtonsBasket[product._id])? 'btn_checked' : '' " 	title="добавить в корзину" ng-click = 'toggleProductBasket(product)'>
+						В корзину
+						<i class="fa fa-shopping-basket"></i>
+						<i class="fa fa-check-circle-o" aria-hidden="true" ></i>
+					</button>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="work_btn">
+			<button ng-click="addProductsDB()">add products</button>		
+		</div> 
+	</div>
+
+</div>
+
+
+

@@ -1,0 +1,128 @@
+<div id="product_info_wrap" ng-controller = "productsInfoCtrl">
+	
+	<h2>{{currentProduct.brand}}  {{currentProduct.model}}</h2>
+	<div class="star_reiting_wrap clearfloat">
+		<star-reiting set-reiting = "{{currentProduct.raiting.val}}"></star-reiting>
+	</div>
+	<div class="row">
+
+		<div class="col-xs-5">
+		carousel
+			<!-- <ul rn-carousel class="image" rn-carousel-easing = "easeInOutQuad"  rn-carousel-duration = "2000" rn-carousel-controls rn-carousel-auto-slide = "5" rn-carousel-controls-allow-loop>
+				<li ng-repeat="colour in currentProductInfo.colours">
+					<div class="layer">
+						{{colour}} 
+					</div>
+				</li>
+			</ul> -->
+		</div>
+		
+
+		<div class="col-xs-7">
+
+			<ul class="info_bar clearfloat">
+				<li><a ng-show = "true" href="#" ng-click = "toggleView('sale', $event)" ng-class = "(activeView.show === 'sale')? 'info_active' : ''">Акция</a></li>
+				<li><a href="#" ng-click = "toggleInfoView('options', $event)" ng-class = "(activeView.show === 'options')? 'info_active' : ''">Характеристики</a></li>
+				<li><a href="#" ng-click = "toggleInfoView('accessories', $event)" ng-class = "(activeView.show === 'accessories')? 'info_active' : ''">Аксессуары</a></li>
+				<li><a href="#" ng-click = "toggleInfoView('services', $event)" ng-class = "(activeView.show === 'services')? 'info_active' : ''">Сервисы</a></li>
+				<li><a href="#" ng-click = "toggleInfoView('delivery', $event)" ng-class = "(activeView.show === 'delivery')? 'info_active' : ''">Доставка</a></li>
+			</ul>
+
+			<div id="info_view">
+				
+				<div id="info_sale_wrap" ng-class = "(activeView.show === 'sale')? '' : 'view_hide'">sale	</div>
+				<div id="info_property_wrap" ng-class = "(activeView.show === 'options')? '' : 'view_hide'">
+					<table>
+						<tbody>
+							<tr>
+								<td>Операц. система</td>
+								<td>{{currentProduct.operSystem}}</td>
+							</tr>
+							<tr>
+								<td>Процессор</td>
+								<td>{{currentProduct.cpu}}</td>
+							</tr>
+							<tr>
+								<td>Колич-во ядер, шт.</td>
+								<td>{{currentProduct.numCores}}</td>
+							</tr>
+							<tr>
+								<td>Память(встроенная), Gb.</td>
+								<td>{{currentProduct.memory}}</td>
+							</tr>
+							<tr>
+								<td>Память оперативная, Mb.</td>
+								<td>{{currentProduct.ramMemory}}</td>
+							</tr>
+							<tr>
+								<td>Экран(размер), px.</td>
+								<td>{{currentProduct.screenDiagonal}}</td>
+							</tr>
+							<tr>
+								<td>Экран(разрешение)</td>
+								<td>{{currentProduct.screenResolution}} px</td>
+							</tr>
+							
+							<tr>
+								<td>Фронт-камера, Mpx.</td>
+								<td>{{currentProduct.frontCamera}}</td>
+							</tr>
+							<tr>
+								<td>Тыловая камера, Mpx.</td>
+								<td>{{currentProduct.mainCamera}}</td>
+							</tr>
+							<tr>
+								<td>Батарея, mA/ч.</td>
+								<td>{{currentProduct.battery}} </td>
+							</tr>
+							<tr>
+								<td>Доступные цвета</td>
+								<td id = "colours_wrap" class="clearfloat"><div ng-repeat = " colour in currentProduct.colours" style="background-color:{{colour}}"></div></td>
+							</tr>
+							<tr>
+								<td>Гарантия, мес.</td>
+								<td>{{currentProduct.guarantee}}</td>
+							</tr>
+							<tr>
+								<td>Цена, грн.</td>
+								<td>{{currentProduct.price}}</td>
+							</tr>
+						</tbody>		
+					</table>
+					
+				</div>
+				<div ng-class = "(activeView.show === 'accessories')? '' : 'view_hide'">
+					<h3>АКСЕССУАРЫ</h3>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatum laborum natus, veniam nemo nostrum doloremque velit quas commodi. Aliquid fugiat officia cumque, a dolor consectetur eligendi eveniet ab asperiores laborum inventore commodi expedita velit porro, illum ipsum. Amet, est nisi veritatis minima, esse beatae explicabo quod, ipsam repudiandae natus reprehenderit facere ratione. Quia incidunt fugiat aliquid doloribus, pariatur vel obcaecati autem ipsum consectetur nam facilis libero nobis similique placeat officia deleniti impedit, inventore, aut animi modi totam ratione dignissimos perspiciatis repudiandae. Ex iure asperiores, aliquid iste vitae culpa debitis vel atque iusto aspernatur, doloremque dolore officiis dolorem modi ullam temporibus?</p>
+				</div>
+				<div ng-class = "(activeView.show === 'services')? '' : 'view_hide'">
+					<h3>СЕРВИСЫ</h3>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eligendi autem eos, in, dolor sequi cupiditate, fuga veniam ad qui quam adipisci repellendus perspiciatis cum, consequuntur eum enim necessitatibus impedit omnis rerum error assumenda. Magni asperiores repellat fugit inventore, vitae amet, magnam praesentium saepe optio ducimus sapiente minus. Laboriosam dolores ipsum reprehenderit placeat et minus soluta eos voluptate, nobis, labore repellendus aut! Impedit consequuntur atque exercitationem laborum molestias error voluptatem. Voluptatum voluptatibus numquam ipsam, consequatur pariatur, aliquid exercitationem nobis iste sed asperiores voluptates accusamus. Nesciunt accusantium eos vero, nisi consequuntur tenetur beatae, illo maxime iusto corrupti ad et, ipsum maiores dignissimos?</p>
+				</div>
+				<div ng-class = "(activeView.show === 'delivery')? '' : 'view_hide'">
+					<h3>УСЛОВИЯ ДОСТАВКИ</h3>
+					<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil, in, corporis. Repudiandae, veniam tempora accusamus earum maiores perspiciatis! Laboriosam, pariatur eligendi omnis aliquid provident reiciendis eaque tempore quos perferendis dicta. Fugiat nesciunt debitis totam cum maxime, ipsa iure earum consequuntur, temporibus. Quis sunt saepe, ad possimus! Qui laborum, laboriosam at. Eaque expedita omnis id, necessitatibus rerum impedit voluptate officiis ad culpa ut molestias tenetur deleniti sapiente asperiores quos cumque dolor. Consequatur aut, architecto cupiditate optio autem dicta voluptas soluta ipsa blanditiis. Fugit, vitae officia, quo ipsam tempora error perspiciatis dolor excepturi doloribus et, libero quae cupiditate. Obcaecati omnis ducimus accusantium.</p>	
+				</div>
+			</div>
+		</div>
+	</div>
+
+	
+
+	<div id="info_comments_wrap">
+		<div id="add_comment">
+
+		<!-- ng-keyup="inspectLength()" -->
+			<textarea rows="5" ng-model="userComment"  ng-change = "inspectLength()"></textarea>
+			<button ng-click="setComment()">оставить отзыв</button>
+			<span>{{infoMessage}}</span>
+		</div>
+		<div class="comments_item" ng-repeat="comment in productComments | orderBy : '-comment.dateMilisec' : true ">
+			<span class="user_name"><i class="fa fa-user" aria-hidden="true"></i> {{comment.user}}</span>
+			<span class="date">{{comment.date}}</span>
+			<p class="comment">{{comment.text}}</p>
+		</div>
+	</div>
+
+</div>
+

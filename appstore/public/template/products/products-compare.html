@@ -1,0 +1,134 @@
+<div id = "compare_wrapper" ng-controller = "productsCompareCtrl">
+	<table class="table table-hover" >
+		рейтинг с косяками!!!!  обьект!!!!
+		и комментарии не по порядку!!!!!!!!!!!!!!!
+		<tbody>
+			<tr>
+
+				<td></td>
+				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse" class="img_wrap">
+					<img ng-src="/img/small/{{product.img.small}}" alt="{{product.brand}} {{product.model}}">
+				</td>
+			</tr>
+			<tr class="brand">
+				<td>Бренд</td>
+				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse">{{product.brand}}</td>
+			</tr>
+			<tr class= "model">
+				<td>Модель</td>
+				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse">{{product.model}}</td>
+			</tr>
+			<tr>
+				<td>Операционная система</td>
+				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse">{{product.operSystem}}</td>
+			</tr>
+			<tr>
+
+				<td>Процессор, марка</td>
+				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse">{{product.cpu}}</td>
+			</tr>
+			<tr>
+
+			
+
+				<td class="btnSort_wrap">
+					Количество ядер, шт.
+					<button ng-click = "sortDown('numCores')"><i class="fa fa-sort-numeric-desc" aria-hidden="true" title = "сортировать"></i></button>
+					<button ng-click = "sortUp('numCores')"><i class="fa fa-sort-numeric-asc" aria-hidden="true" title = "сортировать"></i></button>
+				</td>
+				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse" ng-class = "setClassMinMaxValues('numCores', product.numCores)">{{product.numCores}}</td>
+			</tr>
+			<tr>
+				<td class="btnSort_wrap">
+					Встроенная память, Gb
+					<button ng-click = "sortDown('memory')"><i class="fa fa-sort-numeric-desc" aria-hidden="true" title = "сортировать"></i></button>
+					<button ng-click = "sortUp('memory')"><i class="fa fa-sort-numeric-asc" aria-hidden="true" title = "сортировать"></i></button>
+				</td>
+				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse" ng-class = "setClassMinMaxValues('memory', product.memory)">{{product.memory}}</td>
+			</tr>
+			<tr>
+				<td class="btnSort_wrap">
+					Оперативная память, Gb
+					<button ng-click = "sortDown('ramMemory')"><i class="fa fa-sort-numeric-desc" aria-hidden="true" title = "сортировать"></i></button>
+					<button ng-click = "sortUp('ramMemory')"><i class="fa fa-sort-numeric-asc" aria-hidden="true" title = "сортировать"></i></button>
+				</td>
+				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse" ng-class = "setClassMinMaxValues('ramMemory', product.ramMemory)">{{product.ramMemory}}</td>
+			</tr>
+			<tr>
+				<td class="btnSort_wrap">
+					Диагональ экрана, дм.
+					<button ng-click = "sortDown('screenDiagonal')"><i class="fa fa-sort-numeric-desc" aria-hidden="true" title = "сортировать"></i></button>
+					<button ng-click = "sortUp('screenDiagonal')"><i class="fa fa-sort-numeric-asc" aria-hidden="true" title = "сортировать"></i></button>
+				</td>
+				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse" ng-class = "setClassMinMaxValues('screenDiagonal', product.screenDiagonal)">{{product.screenDiagonal}}</td>
+			</tr>
+			<tr>
+				<td>Разрешение экрана, px.</td>
+				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse">{{product.screenResolution}}</td>
+			</tr>
+			<tr>
+				<td class="btnSort_wrap">
+					Фронтальная камера, Мп.
+					<button ng-click = "sortDown('frontCamera')"><i class="fa fa-sort-numeric-desc" aria-hidden="true" title = "сортировать"></i></button>
+					<button ng-click = "sortUp('frontCamera')"><i class="fa fa-sort-numeric-asc" aria-hidden="true" title = "сортировать"></i></button>
+				</td>
+				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse" ng-class = "setClassMinMaxValues('frontCamera', product.frontCamera)">{{product.frontCamera}}</td>
+			</tr>
+			<tr>
+				<td class="btnSort_wrap">
+					Тыловая камера, Мп.
+					<button ng-click = "sortDown('mainCamera')"><i class="fa fa-sort-numeric-desc" aria-hidden="true" title = "сортировать"></i></button>
+					<button ng-click = "sortUp('mainCamera')"><i class="fa fa-sort-numeric-asc" aria-hidden="true" title = "сортировать"></i></button>
+				</td>
+				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse"  ng-class = "setClassMinMaxValues('mainCamera', product.mainCamera)">{{product.mainCamera}}</td>
+			</tr>
+			<tr>
+				<td class="btnSort_wrap">
+					Батарея, мА/ч
+					<button ng-click = "sortDown('battery')"><i class="fa fa-sort-numeric-desc" aria-hidden="true" title = "сортировать"></i></button>
+					<button ng-click = "sortUp('battery')"><i class="fa fa-sort-numeric-asc" aria-hidden="true" title = "сортировать"></i></button>
+				</td>
+				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse" ng-class = "setClassMinMaxValues('battery',product.battery)">{{product.battery}}</td>
+			</tr>
+			<tr>
+				<td class="btnSort_wrap">
+					Гарантия, мес.
+					<button ng-click = "sortDown('guarantee')"><i class="fa fa-sort-numeric-desc" aria-hidden="true" title = "сортировать"></i></button>
+					<button ng-click = "sortUp('guarantee')"><i class="fa fa-sort-numeric-asc" aria-hidden="true" title = "сортировать"></i></button>
+				</td>
+				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse" ng-class = "setClassMinMaxValues('guarantee', product.guarantee)">{{product.guarantee}}</td>
+			</tr>
+			<tr>
+				<td class="btnSort_wrap">
+					Цена, грн.
+					<button ng-click = "sortDown('price')"><i class="fa fa-sort-numeric-desc" aria-hidden="true" title = "сортировать"></i></button>
+					<button ng-click = "sortUp('price')"><i class="fa fa-sort-numeric-asc" aria-hidden="true" title = "сортировать"></i></button>
+				</td>
+				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse" ng-class = "setClassMinMaxValues('price', product.price)">{{product.price}}</td>
+			</tr>
+			<tr>
+				<td class="btnSort_wrap">
+					Рейтинг
+					<button ng-click = "sortDown()"><i class="fa fa-sort-numeric-desc" aria-hidden="true" title = "сортировать"></i></button>
+					<button ng-click = "sortUp()"><i class="fa fa-sort-numeric-asc" aria-hidden="true" title = "сортировать"></i></button>
+				</td>
+				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse" ng-class = "setClassMinMaxValues('raiting', product.raiting.val)">{{product.raiting.val}}</td>
+			</tr>
+			<tr>
+				<td>Наличие акции</td>
+				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse">
+					<i class="fa fa-check" aria-hidden="true" ng-show = "product.sale.bool"></i>
+				</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse">
+					<button ng-click = "deleteCompare(product._id)" title="убрать из списка"><i class="fa fa-trash" aria-hidden="true"></i></button>
+					<button ng-click = "addBasket(product._id)" title="добавить в корзину"><i class="fa fa-shopping-basket" aria-hidden="true"></i></button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+

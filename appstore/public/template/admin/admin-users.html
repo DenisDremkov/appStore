@@ -1,0 +1,350 @@
+<div id="admin_users" ng-controller = "adminUsersCtrl">
+	<div class="row">
+		<div class="col-xs-6">
+			<div class="items_group">
+				<span>Все пользователи</span>
+				<div class="pagination_wrap clearfloat">
+					<pagination amountPages="amountPages"><pagination>	
+				</div>
+				<table class="table table-bordered table-hover list_users">
+					<thead>
+						<tr>
+							<td>№ п/п</td>
+							<td>ID в базе</td>
+							<td>логин</td>
+							<td>детали</td>
+							<td>удалить</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr ng-repeat = "user in currentGroupUsers">
+							<td>{{$index+1}}</td>
+							<td>{{user._id}}</td>
+							<td>{{user.username}}</td>
+							<td><button ng-show = "{{user.rights !== 'admin'}}" ng-click = "userDetails(user._id, user.commentsId)" title = "детали"><i class="fa fa-eye" aria-hidden="true"></i></button></td>
+							<td><button ng-show = "user.rights !== 'admin'" ng-click = "deleteUser(user._id)" title = "удалить пользователя из бд"><i class="fa fa-trash-o" aria-hidden="true"></i></button></td>
+						</tr>
+					</tbody>
+				</table>	
+			</div>
+		</div>
+		<div class="col-xs-6">
+			<div id="current_user"  class="items_group">
+				<span>Выбранный пользователь</span>
+				<div class="row" ng-show = "currentUser">
+					<div class="col-xs-4">
+						<h4>Аватар</h4>
+							<div class="img_wrap">
+								<img ng-src="../../img/avatars/{{currentUserAvatar}}" alt="avatar">
+								<button ng-click = "deleteAvatar()"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+							</div>
+						
+					</div>
+					<div class="col-xs-8">
+						<label>
+							<h4>Логин</h4>
+							<input type="text" ng-model="currentUser.username" class = "form-control" disabled>
+						</label><br>
+						<label>
+							<h4>e-mail</h4>
+							<input type="text" ng-model="currentUser.email" class = "form-control" disabled>
+						</label>
+					</div>	
+				</div>
+
+				<table class="table table-bordered" ng-show = "currentUser">
+					<thead>
+						<tr>
+							<td>Товары в<br>корзине</td>
+							<td>Комментарии<br>пользователя<br></td>
+							<td>Количество<br>визитов</td>
+							<td>Кол-во оставленных<br>рейтингов</td>
+						</tr>
+					</thead>
+					<tbody>
+						<td>{{currentUser.basket.length}}
+							<button ng-click = "showUserBasket(currentUser._id)" title="показать корзину"><i class="fa fa-eye" aria-hidden="true"></i></button>
+						</td>
+						<td>{{currentUserComments.length}}
+							<button ng-click = "showUserComments(currentUser._id)" title="показать комментарии"><i class="fa fa-eye" aria-hidden="true"></i></button>
+						</td>
+						<td>{{currentUser.visits}}</td>
+						<td>{{currentUser.raitings.length}}</td>
+					</tbody>
+				</table>
+
+				<div class="table_wrap" ng-class = "(activeItemsAdminUser.userComments)? '' : 'view_hide'">
+					<table class="table table-bordered" >
+						<thead>
+							<tr>
+								<td>Дата комментария,<br>Тип товара,<br>id товара</td>
+								<td>Комментарий</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr class="user_comments" ng-repeat = "comment in currentUserComments">
+								<td>{{comment.prettyDate}},<br>{{comment.productKind}},<br>{{comment.product}}
+									<button ng-click = "deleteComment(comment._id)" title="удалить комментарии из бд"><i class="fa fa-trash-o" aria-hidden="true"></i></button>
+								</td>
+								<td>{{comment.text}}</td>							
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				
+				<div class="table_wrap" ng-class = "(activeItemsAdminUser.userBasket)? '' : 'view_hide'">
+					<table class="table table-bordered" >
+					
+						<thead>
+							<tr>
+								<td>Тип</td>
+								<td>Id</td>
+								<td>Цена</td>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat = "product in currentUser.basket">
+								<td>{{product.kind}}</td>
+								<td>{{product._id}}</td>
+								<td>{{product.price}}</td>					
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				
+			</div>		
+		</div>
+	</div>
+</div>
+
+			
+	
+
+			
+	<!-- 			
+		</div>
+
+		<div id="admin_product_addNew" ng-class = "(!productAction.search)? '' : 'view_hide'">
+			<div class="admin_product_item">
+				
+				<div id="admin_add_options" class="add_prod_item ">
+					<h2>характеристики:</h2>
+					<div class="row">
+						<div class="col-xs-4">
+							<div class="form-group">
+								<label>База данных</label>
+								<input type="text" class="form-control" ng-model = "product_val.kind" disabled>
+							</div>
+							<div class="form-group">
+								должны тянутся с базы и должна быть возможность добавить новый
+								<label>Бренд</label>
+								<input type="text"  ng-class="setClass('brand')" ng-model = "product_val.brand" ng-keyup = "validInput('brand')" class="form-control">
+							</div>
+
+							<div class="form-group">
+								<label>Модель</label>
+								<input type="text"  ng-class="setClass('model')" ng-model = "product_val.model" ng-keyup = "validInput('model')" class="form-control">
+							</div>
+							<div class="form-group">
+								<label>Гарантия, мес.</label>
+								<input type="text"  ng-class="setClass('guarantee')" ng-model = "product_val.guarantee" ng-keyup = "validInput('guarantee')" class="form-control">
+							</div>
+							<div class="form-group">
+								<label>Цена, грн.</label>
+								<input type="text"  ng-class="setClass('price')" ng-model = "product_val.price" ng-keyup = "validInput('price')" class="form-control">
+							</div>
+						</div>
+
+						<div class="col-xs-4">
+							<div class="form-group">
+								<label>Операционная система</label>
+								<input type="text"  ng-class="setClass('operSystem')" ng-model = "product_val.operSystem" ng-keyup = "validInput('operSystem')" class="form-control">
+							</div>
+							<div class="form-group">
+								<label>Процессор, марка</label>
+								<input type="text"  ng-class="setClass('cpu')" ng-model = "product_val.cpu" ng-keyup = "validInput('cpu')" class="form-control">
+							</div>
+							<div class="form-group">
+								<label>Количество ядер, шт.</label>
+								<input type="text"  ng-class="setClass('numCores')" ng-model = "product_val.numCores" ng-keyup = "validInput('numCores')" class="form-control">
+							</div>
+							<div class="form-group">
+								<label>Встроенная память, Gb</label>
+								<input type="text"  ng-class="setClass('memory')" ng-model = "product_val.memory" ng-keyup = "validInput('memory')" class="form-control">
+							</div>
+							<div class="form-group">
+								<label>Оперативная память, Gb</label>
+								<input type="text"  ng-class="setClass('ramMemory')" ng-model = "product_val.ramMemory" ng-keyup = "validInput('ramMemory')" class="form-control">
+							</div>
+						</div>
+
+						<div class="col-xs-4">
+							<div class="form-group">
+								<label>Диагональ экрана, дм.</label>
+								<input type="text"  ng-class="setClass('screenDiagonal')" ng-model = "product_val.screenDiagonal" ng-keyup = "validInput('screenDiagonal')" class="form-control">
+							</div>
+							<div class="form-group">
+								<label>Разрешение экрана, px.</label>
+								<input type="text"  ng-class="setClass('screenResolution')" ng-model = "product_val.screenResolution" ng-keyup = "validInput('screenResolution')" class="form-control">
+							</div>
+							<div class="form-group">
+								<label>Фронтальная камера, Мп.</label>
+								<input type="text"  ng-class="setClass('frontCamera')" ng-model = "product_val.frontCamera" ng-keyup = "validInput('frontCamera')" class="form-control">
+							</div>
+							<div class="form-group">
+								<label>Тыловая камера, Мп.</label>
+								<input type="text"  ng-class="setClass('mainCamera')" ng-model = "product_val.mainCamera" ng-keyup = "validInput('mainCamera')" class="form-control">
+							</div>
+							<div class="form-group">
+								<label>Батарея, мА/ч</label>
+								<input type="text"  ng-class="setClass('battery')" ng-model = "product_val.battery" ng-keyup = "validInput('battery')" class="form-control">
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div id = "admin_add_colors" class="add_prod_item clearfloat">
+					<h2>Запишите цвет в формате HEX::</h2>	
+					<input ng-model = "product_newColour" ng-keyup = "validationAddColor()" placeholder="#fff" type="text" class="form-control new_color_view">
+					<input  style="background-color: {{product_newColour}}" type="text" class="form-control new_color_view" disabled>
+					<button ng-click="addNewColor()" class="btn btn-info" ng-disabled = "!valid.btn_addColor">добавить новый цвет</button>
+
+					<div id="new_colors_wrap clearfloat">
+						<div class="current_new_color" ng-repeat = "color in product_val.colours" style="background-color: {{color}}">
+							<button class="delete_color" ng-click = "removeColor(color)">
+								<i class="fa fa-trash" aria-hidden="true"></i>
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<div id = "admin_add_sale" class="add_prod_item clearfloat">
+					<h2>наличие акционных условий</h2>
+					<div class="check_wrap">
+						<label>
+							<i class="fa fa-check" ng-class="(product_sale.bool)? 'check_sale' : ''"></i>
+							<h2 class="unselectable">акционный товар</h2>
+							<input type="checkbox" ng-model="product_sale.bool">
+						</label>
+					</div>
+					<input  ng-class="setClass('sale')" ng-keyup = "validInput('sale')" ng-show="product_sale.bool" ng-model = "product_sale.discount" type="text" class="form-control" placeholder="скидка в %">
+					<textarea ng-show="product_sale.bool" ng-model = "product_sale.descript" class="form-control" placeholder="описание"></textarea>
+				</div>
+			</div>
+
+
+			<hr><hr><hr>
+
+			<p>Cохранените продукт в базе данных, после этого будет доступено добавление изображений</p>
+
+			<div id="btn_add_new_product">
+				<input type="text" ng-model = "serverAnswer"  disabled><br>
+				<button class="btn-primary btn_add" ng-click="setProductDb()">Добавить в базу данных</button><br>
+			</div>
+			
+			<hr><hr><hr>
+
+			
+			<div id = "select_images_wrap" class="admin_product_item">	
+				<h2>изображения:</h2>
+				<div class="row" ng-show = "product_id">
+					<div class="col-xs-4">
+						<h4>Основные</h4>
+						<div class="image_item_wrap">
+							<div class="row ">
+								<div class="col-xs-6">
+									<div class="img_item" ng-class="(product_img.small.file)? '':'img_empty'">
+										<div class="img_wrap">
+											<h3 ng-hide = "product_img.small.file">маленькое<br>до 500 Кб</h3>
+											<img ngf-thumbnail="product_img.small.file">
+											<div class="btn_add_imgSlide" ngf-select ng-model="product_img.small.file" ngf-pattern="'image/*'" ngf-accept="'image/*'" ngf-min-height="0" ngf-max-size="0.5MB">
+												<i class="fa fa-plus" aria-hidden="true"></i>			
+											</div>
+											<i ng-show = "product_img.small.loaded" class="fa fa-check" aria-hidden="true"></i>
+											<i ng-show = "product_img.small.load_img_begin" class="fa fa-refresh fa-spin" aria-hidden="true"></i>
+										</div>
+
+									</div>
+								</div>
+								<div class="col-xs-6">
+									<div class="img_item" ng-class="(product_img.big.file)? '':'img_empty'">
+										<div class="img_wrap">
+											<h3 ng-hide = "product_img.big.file">большое<br>до 3 Mб</h3>
+											<img ngf-thumbnail="product_img.big.file">
+											<div class="btn_add_imgSlide" ngf-select ng-model="product_img.big.file" ngf-pattern="'image/*'" ngf-accept="'image/*'" ngf-min-height="0" ngf-max-size="3MB">
+												<i class="fa fa-plus" aria-hidden="true"></i>
+											</div>
+											<i ng-show = "product_img.big.loaded" class="fa fa-check" aria-hidden="true"></i>
+											<i ng-show = "product_img.big.load_img_begin" class="fa fa-refresh fa-spin" aria-hidden="true"></i>
+										</div>
+
+									</div>
+								</div>
+							</div>
+						</div>	
+					</div>
+
+					<div class="col-xs-8">
+						<h4>Слайдер</h4>
+						<div class="image_item_wrap">
+							<div class="row">
+								<div class="col-xs-3">
+									<div class="img_wrap" ng-class="(product_img.slide1.file)? '':'img_empty'">
+										<h3 ng-hide = "product_img.slide1.file">слайд 1<br>до 1 Mб</h3>
+										<img ngf-thumbnail="product_img.slide1.file">
+										<div class="btn_add_imgSlide" ngf-select ng-model="product_img.slide1.file" ngf-pattern="'image/*'" ngf-accept="'image/*'" ngf-min-height="0" ngf-max-size="1MB">
+											<i class="fa fa-plus" aria-hidden="true"></i>									
+										</div>
+										<i ng-show = "product_img.slide1.loaded" class="fa fa-check" aria-hidden="true"></i>
+										<i ng-show = "product_img.slide1.load_img_begin" class="fa fa-refresh fa-spin" aria-hidden="true"></i>
+									</div>
+
+								</div>
+								<div class="col-xs-3">
+									<div class="img_wrap" ng-class="(product_img.slide2.file)? '':'img_empty'">
+										<h3 ng-hide = "product_img.slide2.file">слайд 2<br>до 1 Mб</h3>
+										<img ngf-thumbnail="product_img.slide2.file">
+										<div class="btn_add_imgSlide" ngf-select ng-model="product_img.slide2.file" ngf-pattern="'image/*'" ngf-accept="'image/*'" ngf-min-height="0" ngf-max-size="1MB">
+											<i class="fa fa-plus" aria-hidden="true"></i>									
+										</div>
+										<i ng-show = "product_img.slide2.loaded" class="fa fa-check" aria-hidden="true"></i>
+										<i ng-show = "product_img.slide2.load_img_begin" class="fa fa-refresh fa-spin" aria-hidden="true"></i>
+									</div>
+
+								</div>
+								<div class="col-xs-3">
+									<div class="img_wrap" ng-class="(product_img.slide3.file)? '':'img_empty'">
+										<h3 ng-hide = "product_img.slide3.file">слайд 3<br>до 1 Mб</h3>
+										<img ngf-thumbnail="product_img.slide3.file">
+										<div class="btn_add_imgSlide" ngf-select ng-model="product_img.slide3.file" ngf-pattern="'image/*'" ngf-accept="'image/*'" ngf-min-height="0" ngf-max-size="1MB">
+											<i class="fa fa-plus" aria-hidden="true"></i>								
+										</div>
+										<i ng-show = "product_img.slide3.loaded" class="fa fa-check" aria-hidden="true"></i>
+										<i ng-show = "product_img.slide3.load_img_begin" class="fa fa-refresh fa-spin" aria-hidden="true"></i>
+									</div>
+
+								</div>
+								<div class="col-xs-3">
+									<div class="img_wrap" ng-class="(product_img.slide4.file)? '':'img_empty'">
+										<h3 ng-hide = "product_img.slide4.file">слайд 4<br>до 1 Mб</h3>
+										<img ngf-thumbnail="product_img.slide4.file">
+										<div class="btn_add_imgSlide" ngf-select ng-model="product_img.slide4.file" ngf-pattern="'image/*'" ngf-accept="'image/*'" ngf-min-height="0" ngf-max-size="1MB">
+											<i class="fa fa-plus" aria-hidden="true"></i>
+										</div>
+										<i ng-show = "product_img.slide3.loaded" class="fa fa-check" aria-hidden="true"></i>
+										<i ng-show = "product_img.slide3.load_img_begin" class="fa fa-refresh fa-spin" aria-hidden="true"></i>
+									</div>
+								</div>
+							</div>
+						</div>		
+					</div>
+				</div>
+
+				<button  ng-click = "setImgDb()" class="btn-primary btn_add" >Добавить изображения в базу данных</button>		
+			</div>
+		</div>
+	</div>
+</div>
+
+
+ -->
