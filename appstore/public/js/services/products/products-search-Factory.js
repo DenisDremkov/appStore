@@ -1,7 +1,7 @@
 
 angular.module('ProductsSearchCtrl')
 
-.factory('productsSearchFactory', ['$http',   function($http) {
+.factory('productsSearchFactory', ['$http', '$rootScope',  function($http, $rootScope) {
 
 	function createSliders(slidersVal) {
 		// console.log(slidersVal)
@@ -56,6 +56,43 @@ angular.module('ProductsSearchCtrl')
 					// scope.$emit('newValuesSliders')
 				})
 			}			
+		},
+		testEmptyBrends : function(scope) {
+			'use strict';
+			var objBrends = scope.data.brendsThisProducts;
+			var prop;
+			var createView;
+			for (prop in objBrends) {
+				if (objBrends[prop]) {
+					createView = true;
+					break;
+				}
+			}
+			if (!createView) {
+				$rootScope.$emit('showWebAssistant', "Выберите бренды")
+			}
+		},
+		createNewCheckBox : function(arrBrends, scope) {
+			'use strict';
+			var objCheckbox = {};
+			var i;
+			if (scope.showAllBrends) {
+				for (i = 0; i < arrBrends.length; i++) {
+					objCheckbox[arrBrends[i]] = true;
+				}
+				scope.showAllBrends = false;
+				return objCheckbox;
+			}
+			else {
+				for (i = 0; i < arrBrends.length; i++) {
+					objCheckbox[arrBrends[i]] = false;
+				}
+				scope.showAllBrends = true;
+				return objCheckbox;
+			}
+			
 		}
+
+		
 	}	
 }]);

@@ -10,7 +10,7 @@ var mailOptions = {
 };
 
 module.exports = function(err) {
-	mailOptions.html = "<p>" + err + "</p>"
+	mailOptions.html = "<p>" + JSON.stringify(err) + "</p>"
 	transporter.sendMail(mailOptions, function(error, info){
 		if(error){
 			return console.log(error);

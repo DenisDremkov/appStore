@@ -6,6 +6,7 @@ angular.module('ProductsInfoCtrl',[])
 	$scope.userComment = undefined;
 	$scope.userCommentLength = undefined;
 	$scope.productComments = undefined;
+	$scope.currProductImgCarousel = undefined;
 	$scope.reitObj = {};
 	$scope.reitObj.val = 3.5;
 	$scope.activeView = {show : 'options'};
@@ -28,7 +29,6 @@ angular.module('ProductsInfoCtrl',[])
 		}
 	}
 	$scope.$on('showInfoProduct', function(event, product) {
-		if (true) {}
 		productsInfoFactory.showInfo($scope, product)
 	})
 }]);

@@ -33,7 +33,7 @@ angular.module('appStore')
 						imgWrap,
 						url;
 				//create image element
-				url = '/img/big/' + attributes.pathImg;
+				url = '/img/products/big/' + attributes.kindProduct + '/' + attributes.idImg;
 				// name =  goods.brend + " " + String(goods.model);
 				img = angular.element('<img>');
 				img.attr("src", url);

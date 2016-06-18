@@ -2,30 +2,37 @@
 
 	<div class="row">
 		<div class="col-xs-12 col-sm-4">
-			<div class="search_wrap search_item">
-				<span>Поиск по названию</span>
-				<input type="text" ng-model = "data.search.searchBrend" placeholder="бренд">
-				<input type="text" ng-model = "data.search.searchModel" placeholder="модель">
-			</div>
-
 			<div class="check_wrap search_item">
-				<span>Поиск по брендам</span>
-				<label ng-repeat = "(key, value) in data.brendsThisProducts" ng-click = "toggleCheckBox(key)" >
+				<span>Поиск по бренду</span>
+				
+
+				<label class="checkbox_custom" ng-repeat = "(key, value) in data.brendsThisProducts" ng-click = "toggleCheckBox(key)" >
 					<i class="fa fa-check" ng-class = "(data.brendsThisProducts[key])? '' : 'check_hide'"></i>
 					<h2 class="unselectable">{{key}}</h2>
 				</label><br>
-				<button ng-click = "checkAllBrends()">Выделить все бренды</button>
-				<button ng-click = "clearCheckAllBrends()">Сброс</button>
+
+
+				<label id="toggleAllBrands" class="checkbox_custom" ng-click = "toggleAllBrends()" >
+					<i class="fa fa-check" ng-class = "(!showAllBrends)? '' : 'check_hide'"></i>
+					<h2 class="unselectable">выбрать все бренды</h2>
+				</label><br>
+
+			</div>
+			<div class="search_wrap search_item">
+				<span>Поиск по модели</span>
+				<input type="text" ng-model = "data.search.searchModel" ng-keyup = "testEmptyBrends()" placeholder="модель">
 			</div>
 
+			
+
 			<div class="search_item">
-				<span>показать только акционные предложения</span>
-				<label ng-click="inspectSale()">
-					<!-- <i class="fa fa-check" ng-class = "(data.brendsThisProducts[key])? '' : 'check_hide'"></i> -->
-					<h2 class="unselectable">акция</h2>
-					<input type="checkbox" ng-model = "data.productsWithSale" >
+				<span>Акция</span>
+				<label class="checkbox_custom" ng-click="toggleSale()">
+					<i class="fa fa-check" ng-class = "(data.productsWithSale)? '' : 'check_hide'"></i>
+					<h2 class="unselectable">только акционные товары</h2>
 				</label>
 			</div>
+			
 		</div>
 		
 		<div class="col-xs-12 col-sm-8">
@@ -38,16 +45,21 @@
 					</div>
 				</div>
 			</div>
+			
 		</div>
 	</div>
-
-
-
+	<div ng-show = "view_mainList" id="filters_wrap" class="clearfloat">
+		<span>Сортировать список</span>
+		<button id="orderBySearchRaiting" class="orderBy_active" ng-click="orderBy('raiting')">Рейтинг
+			<i class="fa fa-sort-desc" aria-hidden="true"></i>
+		</button>
+		<button id="orderBySearchPrice" ng-click="orderBy('price')">Цена
+			<i class="fa fa-sort-desc" aria-hidden="true"></i>
+		</button>
+		
 	
+	</div>
 	
-
-
-
 	
 
 </div>

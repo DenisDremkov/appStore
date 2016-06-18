@@ -2,7 +2,7 @@
 
 angular.module('MainCtrl',[])
 
-.controller('mainCtrl', ['$scope',  '$rootScope', '$timeout', function($scope, $rootScope, $timeout) {
+.controller('mainCtrl', ['$scope',  '$rootScope', '$timeout',  'socket', '$interval', function($scope, $rootScope, $timeout, socket, $interval) {
 	'use strict';
 		//WEB ASSISTANT
 	//====================================================
@@ -67,4 +67,13 @@ angular.module('MainCtrl',[])
 	}
 	$scope.deleteUsers = function() {$http.get('http://localhost:3000/deleteUsers')}
 	$scope.addUsers = function() {$http.get('http://localhost:3000/addRandomUsers')}
+	//inspect session admin (т.к. логин и пароль админа доступны любому то во избежание накладок(одновременно два админа - могут удалять данные и т.п.) на сервере запускается скрипт препятствующий этому)
+	function inspectAdminInSession() {
+		$interval(function() {
+			socket.emit('adminInSession', {})
+		},5000)
+	}
+	socket.on('inspectAdminInSession', function() {
+		inspectAdminInSession()
+	})
 }]);

@@ -1,72 +1,68 @@
 
 angular.module('ProductsMainCtrl')
 
-.factory('productsMainFactory', ['$http', '$rootScope',  function($http, $rootScope) {
+.factory('productsMainFactory', ['$http', '$rootScope', '$timeout',  function($http, $rootScope, $timeout) {
 	'use strict';
-
+	function showCarouselSale(data) {
+		var currProducts = data.ALL_PRODUCTS[data.currentTypeProducts];
+		var i;
+		var productsWithSale = [];
+		for (i = 0; i < currProducts.length; i++) {
+			if (currProducts[i].sale.bool) {
+				productsWithSale.push(currProducts[i])
+			}
+		}
+		data.carouselView = productsWithSale;
+		data.carouselShow = true;
+	}
 	return {
-		getStartData : function(scope) {
+		getData : function(typeProducts, scope, event) {
+			scope.data.activeItems.currentProducts = typeProducts;
+			scope.data.currentTypeProducts = typeProducts;
+			if (event) {event.preventDefault();}
 			scope.$emit('startSpinner');
-			$http.get(scope.data.url.startData)
+			$http.post(scope.data.url.getDb, {'kindProduct' : typeProducts})
 				.success(function(res) {
 					'use strict'
-					var	startProducts;
-					startProducts = res[scope.data.currentTypeProducts];
-					scope.data.ALL_PRODUCTS[scope.data.currentTypeProducts] = startProducts;
-					scope.data.currentProducts = startProducts;
+					var	products;
+					console.log(res)
+					products = res[scope.data.currentTypeProducts];
+
+					scope.data.ALL_PRODUCTS[scope.data.currentTypeProducts] = products;
+					scope.data.currentProducts = products;
 					scope.data.all_brends = res.allBrends[0];
+					// scope.data.brendsThisProducts = scope.data.all_brends[0][typeProducts]
 					scope.data.MIN_AND_MAX_VALUES = res.valMinMax[0];
 					//lastPageInPagination
 					scope.$watch('data.amountPages', function(newVal) {
 						scope.$broadcast('changePagination', newVal)
 					})
-					scope.data.amountPages = Math.ceil((startProducts.length)/(scope.data.numberProductsView));
+					scope.data.amountPages = Math.ceil((products.length)/(scope.data.numberProductsView));
 					//create start view
-					scope.view_mainList = startProducts.slice(0, scope.data.numberProductsView);
+					scope.view_mainList = products.slice(0, scope.data.numberProductsView);
+					showCarouselSale(scope.data)
 					scope.$emit('stopSpinner');
 					$rootScope.$emit('setCtrlDescr', 'user-products')
-					if ($rootScope.rootUser.username) {
-						$rootScope.$emit('showWebAssistant', "Здраствуйте! " + $rootScope.rootUser.username);
+					if (scope.data.firstLoadDb) {
+						if ($rootScope.rootUser.username) {
+							$rootScope.$emit('showWebAssistant', "Здраствуйте! " + $rootScope.rootUser.username);
+						}
+						else {
+							$rootScope.$emit('showWebAssistant', "Здраствуйте! Если вы не авторизованы - ваши возможности ограничены!");
+						}
+						scope.data.firstLoadDb = false;
 					}
-					else {
-						$rootScope.$emit('showWebAssistant', "Здраствуйте! Если вы не авторизованы - ваши возможности ограничены!");
-					}
-					
+					console.log(products)
+					if (products.length == 0) {
+						console.log('dasd')	
+						$timeout(function() {
+							$rootScope.$emit('showWebAssistant', "БД ноутбуков пустая, зайдите под администратором и добавьте бд");
+						},7000)
+						
+					}					
 				})
 				.error(function(err) {console.log(err)});	
 		},
-		toggleProducts : function(currentProducts, event, scope) {
-			'use strict';
-			event.preventDefault();
-			var 	url,
-					currProductsArr,
-					productsInView;
-			productsInView = scope.data.numberProductsView;
-			currProductsArr = scope.data.ALL_PRODUCTS[currentProducts];
-			scope.data.activeItems.currentProducts = currentProducts;
-			scope.data.currentTypeProducts = currentProducts;
-			//if scope contains this data
-			if (currProductsArr) {
-				scope.data.currentProducts = currProductsArr;
-				scope.data.amountPages = Math.ceil((currProductsArr.length)/(productsInView));
-				scope.view_mainList = currProductsArr.slice(0, productsInView)
-			}
-			//if scope not contains this data
-			else {
-				scope.$emit('startSpinner');
-				url = scope.data.url.getProducts + currentProducts,
-				$http.get(url)
-					.success(function(res) {
-						scope.data.currentProducts = res;
-						scope.data.ALL_PRODUCTS[currentProducts] = res;
-						scope.data.amountPages = Math.ceil((res.length)/(productsInView));
-						scope.view_mainList = res.slice(0, productsInView);
-						scope.$emit('stopSpinner');	
-					})
-					.error(function(err) {console.log(err)});	
-			}
-			scope.data.activeItems.currentProducts = currentProducts;
-		}, 
 		toggleBar : function(typeBar, scope) {
 			'use strict';
 			scope.data.url.bar = "../../template/products/products-" + typeBar + ".html"
@@ -77,80 +73,106 @@ angular.module('ProductsMainCtrl')
 			}
 			else {
 				scope.data.activeItems.mainList = true;
-				scope.view_mainList = scope.data.ALL_PRODUCTS[scope.data.currentTypeProducts].slice( 0, scope.data.numberProductsView );
+				if(typeBar === 'search')	{
+					scope.view_mainList = undefined;
+				}
+				else {
+					scope.data.activeItems.mainList = true;
+					scope.view_mainList = scope.data.ALL_PRODUCTS[scope.data.currentTypeProducts].slice( 0, scope.data.numberProductsView );
+				}
 			} 	
 		},
-		createView : function(scope) {
+		createView : function(scope, page) {
 			'use strict';
 			var i;
 			var thisProduct;
 			var pushBoolean;
-			var arrProducts = scope.data.currentProducts;
-			var arrProductsLength  = arrProducts.length;
-			var type = scope.data.currentTypeProducts;
-			var brands = scope.data.all_brends[type];
-			var userSliderValues = {};
-			var arrSliders = scope.data.slidersView;
-			var arrSlidersLength = arrSliders.length;
-			var arrView = [];
-			var sale = scope.data.productsWithSale;
-			
-			function compareValuesSlider(userValSlider, arr, product) {	
-				'use strict';
-				var i;
-				var userValues;
-				var productValue;
-				var prop;				
-				top:
-				for (prop in userValSlider) {
-					userValues = userValSlider[prop];
-					productValue = product[prop];
-					//raiting (because reiting - object)
-					if ((typeof product[prop]) === "object") {
-						productValue = product[prop].val;
+			var arrProducts;
+			var arrProductsLength;
+			var type;
+			var brands;
+			var userSliderValues;
+			var arrSliders;
+			var arrSlidersLength;
+			var arrView;
+			var sale;
+			var listProductsStartPosition;
+			var listProductsEndPosition;
+			var viewProductsWithPagination;
+
+			if (scope.data.activeItems.productsBar === "search") {
+				arrProducts = scope.data.currentProducts;
+				arrProductsLength  = arrProducts.length;
+				type = scope.data.currentTypeProducts;
+				brands = scope.data.brendsThisProducts;
+				userSliderValues = {};
+				arrSliders = scope.data.slidersView;
+				arrSlidersLength = arrSliders.length;
+				arrView = [];
+				sale = scope.data.productsWithSale;
+				function compareValuesSlider(userValSlider, arr, product) {	
+					'use strict';
+					var i;
+					var userValues;
+					var productValue;
+					var prop;				
+					top:
+					for (prop in userValSlider) {
+						userValues = userValSlider[prop];
+						productValue = product[prop];
+						//raiting (because reiting - object)
+						if ((typeof product[prop]) === "object") {
+							productValue = product[prop].val;
+						}
+						else {
+							productValue = product[prop]
+						}
+						if (	(productValue >= userValues.min)  && 	(productValue <= userValues.max)	 ) {
+							continue top;
+						}
+						else {
+							return false
+						}
 					}
-					else {
-						productValue = product[prop]
-					}
-					if (	(productValue >= userValues.min)  && 	(productValue <= userValues.max)	 ) {
-						continue top;
-					}
-					else {
-						return false
-					}
+					return true;	
+				};
+				for ( i = 0; i < arrSlidersLength; i++) {
+					userSliderValues[arrSliders[i].nameSlider] = {};
+					userSliderValues[arrSliders[i].nameSlider]['min'] = arrSliders[i].min;
+					userSliderValues[arrSliders[i].nameSlider]['max'] = arrSliders[i].max;  
 				}
-				return true;	
-			};
-			for ( i = 0; i < arrSlidersLength; i++) {
-				userSliderValues[arrSliders[i].nameSlider] = {};
-				userSliderValues[arrSliders[i].nameSlider]['min'] = arrSliders[i].min;
-				userSliderValues[arrSliders[i].nameSlider]['max'] = arrSliders[i].max;  
-			}
-			top:
-			for (i = 0; i < arrProductsLength; i++) {
-				thisProduct = arrProducts[i];
-				// test brand
-				if (brands[thisProduct.brand]) {
-					if (sale) {
-						// test sale
-						if (thisProduct.sale.bool) {
+				top:
+				for (i = 0; i < arrProductsLength; i++) {
+					thisProduct = arrProducts[i];
+					// test brand
+					if (brands[thisProduct.brand]) {
+						if (sale) {
+							// test sale
+							if (thisProduct.sale.bool) {
+								//test sliders value
+								pushBoolean = compareValuesSlider(userSliderValues, arrView, thisProduct)
+							}
+							else {
+								continue top;
+							}
+						}
+						else {
 							//test sliders value
 							pushBoolean = compareValuesSlider(userSliderValues, arrView, thisProduct)
 						}
-						else {
-							continue top;
+						if (pushBoolean) {	
+							arrView.push(thisProduct) 
 						}
-					}
-					else {
-						//test sliders value
-						pushBoolean = compareValuesSlider(userSliderValues, arrView, thisProduct)
-					}
-					if (pushBoolean) {	
-						arrView.push(thisProduct) 
-					}
-				}	
+					}	
+				}
+				scope.view_mainList = arrView;
 			}
-			scope.view_mainList = arrView;
+			else {
+				listProductsStartPosition = (page - 1) * scope.data.numberProductsView;
+				listProductsEndPosition = listProductsStartPosition + scope.data.numberProductsView;
+				arrProducts = scope.data.ALL_PRODUCTS[scope.data.currentTypeProducts];
+				scope.view_mainList = arrProducts.slice(listProductsStartPosition, listProductsEndPosition)
+			} 
 		},
 		addCompare : function(product, scope) {
 			'use strict';
@@ -166,7 +188,7 @@ angular.module('ProductsMainCtrl')
 				for (i = 0; i < arr.length; i++) {
 					if (arr[i]._id === product._id) {
 						index = i;
-						console.log(index)
+						
 						break;
 					}
 				}
@@ -176,7 +198,7 @@ angular.module('ProductsMainCtrl')
 				}
 				else {
 					if (arr.length > 8) {
-						alert('не более 8')
+						$rootScope.$emit('showWebAssistant', "Не более 9 товаров")
 						// message 
 					}
 					else {
@@ -192,6 +214,7 @@ angular.module('ProductsMainCtrl')
 			var i;
 			var userBasket;
 			var newProductBasket;
+			console.log()
 			if (objBasketId[product._id]) {
 				$http.post(scope.data.url.deleteBasket, {
 						'userId' : $rootScope.rootUser._id, 

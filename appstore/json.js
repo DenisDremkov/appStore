@@ -12,13 +12,13 @@
     guarantee : '{{random(6, 12, 18, 24, 36)}}',
     price : '{{integer(2000, 10000)}}',
     operSystem : '{{random("Android 4.0", "Android 4.05", "Android 4.1", "Android 4.2", "Android 4.2")}}',
-    cpu : '{{random("Core 2", "Pentium 5", "Intel 2.0", "Artron", "Core 3 Duo")}}',
+    cpu : '{{random("Core", "Pentium", "Intel", "Artron", "CoreDuo", "AMD")}}',
     numCores : '{{integer(2, 8)}}',
     memory : '{{integer(4, 40)}}',
     ramMemory : '{{random(512, 1024, 2048)}}',
     screenDiagonal : '{{floating(4, 10, 1)}}',
     screenResolution : '{{random("1024*678", "1024*512", "2048*1024")}}',
-    frontCamera : '{{floating(0.5, 3, 1)}}',
+    frontCamera : '{{floating(1, 3, 1)}}',
     mainCamera : '{{integer(4, 15)}}',
     battery : '{{integer(2000, 4000)}}',
     colours : [
@@ -40,7 +40,7 @@
       descript : '{{lorem(20, "words")}}'
     },
     raiting : {
-      val : 1,
+      val : '{{floating(1, 4, 1)}}',
       num : 1,
       sum : 1
     }

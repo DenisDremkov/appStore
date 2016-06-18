@@ -42,25 +42,31 @@ angular.module('ProductsInfoCtrl')
 					commentDate,
 					newComment = {},
 					milisec;
-			if (scope.userCommentLength && scope.userCommentLength < 300) {
-				if ($rootScope.rootUser.rights && $rootScope.rootUser.rights === 'user') {
-					milisec = new Date().getTime();
-					//спинер не пашет
-					$rootScope.$emit('startSpinner');
-					$http.post(url, {
-						'kindProduct' : scope.currentProduct.kind,
-						'idProduct' : scope.currentProduct._id,
-						'idComments' : scope.currentProduct.comments.idComments,
-						'milisec' : milisec,
-						'text' : scope.userComment,
-						'user' : $rootScope.rootUser.username,
-						'idCommentsUser' : $rootScope.rootUser.commentsId})
+			if ($rootScope.rootUser.rights && $rootScope.rootUser.rights === 'user') {
+				if (scope.userCommentLength == 0) {
+					$rootScope.$emit('showWebAssistant', "Введите сообщение"); 
+				}
+				else {
+					if (scope.userCommentLength > 300) {
+						$rootScope.$emit('showWebAssistant', "Вы превысили максимально допустимое кол-во символов"); 
+					}
+					else {
+						milisec = new Date().getTime();
+						$rootScope.$emit('startSpinner');
+						$http.post(url, {
+							'kindProduct' : scope.currentProduct.kind,
+							'idProduct' : scope.currentProduct._id,
+							'idComments' : scope.currentProduct.comments.idComments,
+							'milisec' : milisec,
+							'text' : scope.userComment,
+							'user' : $rootScope.rootUser.username,
+							'idCommentsUser' : $rootScope.rootUser.commentsId
+						})
 						.success(function(doc) {
 							if (doc.success) {
 								newComment.user = $rootScope.rootUser.username;
 								newComment.date = prettyDate(milisec);
 								newComment.text = scope.userComment;
-
 								scope.productComments.push(newComment);
 								$rootScope.$emit('showWebAssistant', "комментарий добавлен"); 
 								$rootScope.$emit('stopSpinner')
@@ -74,34 +80,54 @@ angular.module('ProductsInfoCtrl')
 							$rootScope.$emit('showWebAssistant', "сбой на сервере, повторите позже"); 
 							$rootScope.$emit('stopSpinner')
 						})	
-				}
-				else {
-					$rootScope.$emit('showWebAssistant', "комментарии могут оставлять только зарегестрированные пользователи"); 
-					$timeout(function() {
-						scope.infoMessage = undefined;
-					}, 3000)
-				}
+					}	
+				}	
 			}
 			else {
-				scope.infoMessage = "максимальное количество символов в сообщении - 300"
-			}	
+				$rootScope.$emit('showWebAssistant', "комментарии могут оставлять только зарегестрированные пользователи"); 
+			}
 		}, 
 		showInfo : function(scope, product) {
 			'use strict';
 			var 	arrCommentsLength,
-					i;
-			scope.currentProduct = product;
+					arrImgCarousel,
+					i,
+					objImg,
+					prop,
+					stringProp;
+			
+			
+			
+			//comments
+			$rootScope.$emit('startSpinner')
 			$http.post(scope.data.url.getComments, {
 				"idComments" : product.comments.idComments,
 				"db" : product.kind})
 				.success(function(doc) {
-					console.log(doc)
+					// console.log(doc)
 					arrCommentsLength = doc.length;
 					// console.log()
 					for (i = 0; i < arrCommentsLength; i++) {
 						doc[i].date = prettyDate(doc[i].dateMilisec)
 					}
+					
 					scope.productComments = doc;
+					//carousel values
+					arrImgCarousel = [];
+					for (prop in product.img) {
+						stringProp = JSON.stringify(prop)
+						if ( (stringProp !== '"small"')  &&  (stringProp !== '"big"') ) {
+							objImg = {};
+							objImg.name = prop;
+							objImg.fileName = product.img[prop]
+							arrImgCarousel.push(objImg)
+						}
+						
+					}
+					scope.currProductImgCarousel = arrImgCarousel;
+					scope.currentProduct = product;
+					// console.log(scope.currProductImgCarousel)
+					$rootScope.$emit('stopSpinner')
 				})
 				.error(function(err) {
 					console.log(err)

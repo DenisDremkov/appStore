@@ -57,20 +57,26 @@ angular.module('AutentificCtrl')
 				$rootScope.$emit('startSpinner')
 				$http.post(scope.url.login, scope.user)
 					.success(function(res) {
-						if (res.username) {
-							if (res.rights === 'admin') {
-								$rootScope.adminKeyAccess = res.keyAccess;
-								$rootScope.rootUser = res;
-								successLogin(res.username, scope)
-							};
-							if (res.rights === 'user') {
-								$rootScope.rootUser = res;									
-								successLogin(res.username, scope)							
-							};							
+						if (res.admin === 'inSession') {
+							$rootScope.$emit('showWebAssistant', "На данный момент под админом уже работают, попробуйте позже");
+							$rootScope.$emit('stopSpinner')
 						}
 						else {
-							$rootScope.$emit('showWebAssistant', res);
-							$rootScope.$emit('stopSpinner')
+							if (res.username) {
+								if (res.rights === 'admin') {
+									$rootScope.adminKeyAccess = res.keyAccess;
+									$rootScope.rootUser = res;
+									successLogin(res.username, scope)
+								};
+								if (res.rights === 'user') {
+									$rootScope.rootUser = res;									
+									successLogin(res.username, scope)							
+								};							
+							}
+							else {
+								$rootScope.$emit('showWebAssistant', res);
+								$rootScope.$emit('stopSpinner')
+							}	
 						}	
 					})
 					.error(function(err) {
@@ -91,6 +97,7 @@ angular.module('AutentificCtrl')
 				.success(function(res) {
 					if (res.deleteCookie) {
 						$cookies.remove('user.session')
+						location.reload()
 
 					}
 				})

@@ -17,11 +17,17 @@ angular.module('appStore')
 				}
 				else {
 					delta = thisStar - reitGoods;					
-					if ( delta >= 0.3  &&  delta <0.7) {
+					if ( delta >= 0.3  &&  delta <=0.7) {
 						return 'fa fa-star-half-o';
 					} 
 					else {
-						return 'fa fa-star-o';
+						if (delta<0.3) {
+							return 'fa fa-star';
+							
+						}
+						if (delta>0.7) {
+							return 'fa fa-star-o';
+						}	
 					}
 				}
 			};
@@ -54,6 +60,7 @@ angular.module('appStore')
 						idUser = scope.rootUser._id, // (rootscope)
 						i,
 						url = scope.data.url.setReiting;
+						console.log(idUser, idProduct, kindProduct, index)
 				if (idUser && scope.rootUser.rights === "user") {
 					if (scope.rootUser.objRaiting[idProduct]) { // test in rootscope
 						scope.$emit('showWebAssistant', "Вы уже рейтинговали данный товар ранее");

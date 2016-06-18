@@ -42,13 +42,9 @@ angular.module('ProductsCompareCtrl')
 				arrMinMax[prop]['min'] = resultSort[0];
 				arrMinMax[prop]['max'] = resultSort[resultSort.length-1];
 			}
-			// console.log(arrMinMax)
 			return arrMinMax;
 		},
 		setClass : function(option, value, scope) {
-			// console.log(value)
-			// console.log(typeof value)
-			// console.log('da')
 			if (scope.arrCompareProducts.length > 1 ) {
 				switch (value) {
 				case  scope.valueMinMax[option]['min']:

@@ -185,19 +185,16 @@ var setAllArhivRandomValues = function  () {
 						todayDate = new Date().getDate() - 1;
 						daysThisMonth = arrYear[5].days.splice(0, todayDate)
 						monthDb.month = new Date().getMonth();
-						
 						summVisitsMonth = 0;
 						for (i = 0; i < daysThisMonth.length; i++) {
 							summVisitsMonth += daysThisMonth[i].visits
 						}
 						monthDb.visits = summVisitsMonth;
-						
 						summUniqVisitsSumm = 0;
 						for (i = 0; i < daysThisMonth.length; i++) {
 							summUniqVisitsSumm += daysThisMonth[i].uniqVisits
 						}
 						monthDb.uniqVisits = summUniqVisitsSumm
-						
 						for (var i = 0; i < daysThisMonth.length; i++) {
 							monthDb.days.push(daysThisMonth[i])
 						}

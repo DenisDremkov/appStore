@@ -1,7 +1,7 @@
 
 angular.module('AdminProductsCtrl')
 
-.factory('adminProductsFactory', ['$http', '$timeout', '$rootScope', function($http, $timeout, $rootScope) {
+.factory('adminProductsFactory', ['$http', '$timeout', '$rootScope', 'productsInfoFactory', '$interval', function($http, $timeout, $rootScope, productsInfoFactory, $interval) {
    'use strict';
    function validation(scope) {
       var objValid = scope.valid;
@@ -36,38 +36,38 @@ angular.module('AdminProductsCtrl')
       console.log('da')
       scope.valid_btn.btn_setProductDb = !allValuesValid;
    };
-   function clearAllValues(scope) {
-      'use strict';
-      var product_val = scope.product_val;
-      var product_img = scope.product_img;
-      var valid = scope.valid;
-      var prop;
-      for(prop in product_val) {
-         if (prop !== 'sale' && prop !== 'colours') {
-            scope.product_val[prop] = undefined;
-         }
-      }
-      product_val.colours = [0];
-      for(prop in product_img) {
-         scope.product_img[prop].file = undefined;
-         scope.product_img[prop].load_img_begin = false;
-         scope.product_img[prop].loaded = false;
-      }
-      for(prop in valid) {
-         scope.valid[prop].value = false;
-      }
-      scope.saleValid.discount.value = false;
-      scope.saleValid.descript.value = false;
-      scope.product_id = undefined;
-      scope.valid_btn.btn_setProductDb =  true
-      scope.valid_btn.btn_setImgDb =  false
-      scope.product_val.sale.bool = false;
-      scope.product_kind = undefined;
-      scope.product_val.sale.discount = undefined;
-      scope.product_val.sale.descript = undefined;
-      scope.togglePreparedProduct = true;
-      scope.product_newColour = undefined;
-   };
+   // function clearAllValues(scope) {
+   //    'use strict';
+   //    var product_val = scope.product_val;
+   //    var product_img = scope.product_img;
+   //    var valid = scope.valid;
+   //    var prop;
+   //    for(prop in product_val) {
+   //       if (prop !== 'sale' && prop !== 'colours') {
+   //          scope.product_val[prop] = undefined;
+   //       }
+   //    }
+   //    product_val.colours = [0];
+   //    for(prop in product_img) {
+   //       scope.product_img[prop].file = undefined;
+   //       scope.product_img[prop].load_img_begin = false;
+   //       scope.product_img[prop].loaded = false;
+   //    }
+   //    for(prop in valid) {
+   //       scope.valid[prop].value = false;
+   //    }
+   //    scope.saleValid.discount.value = false;
+   //    scope.saleValid.descript.value = false;
+   //    scope.product_id = undefined;
+   //    scope.valid_btn.btn_setProductDb =  true
+   //    scope.valid_btn.btn_setImgDb =  false
+   //    scope.product_val.sale.bool = false;
+   //    scope.product_kind = undefined;
+   //    scope.product_val.sale.discount = undefined;
+   //    scope.product_val.sale.descript = undefined;
+   //    scope.togglePreparedProduct = true;
+   //    scope.product_newColour = undefined;
+   // };
    return {
       addNewColor : function(scope) {
          var index;
@@ -118,46 +118,120 @@ angular.module('AdminProductsCtrl')
          scope.mainView = scope.view.slice(0, scope.numProductsInView)
       },
       getDb : function(nameDb, scope) {
-         scope.product_val.kind = nameDb;
-         scope.currentDb.name = nameDb;
-         if (!scope.DB[nameDb].value) {
+         if (!scope.productAction.edit) {
+            scope.product_val.kind = nameDb;
+            scope.currentDb.name = nameDb;
+            scope.typeSearch.pages = true;
+            scope.typeSearch.values = false;
             scope.$emit('startSpinner')
             $http.post(scope.url + "/getDbAdmin", {'nameDb' : nameDb})
-            .success(function(data) {
-               scope.DB[nameDb].value = data;
-               scope.numProducts[nameDb] = data.length;
-               scope.view = data;
-               scope.$emit('stopSpinner')
-            })
-            .error(function(err) {
-               console.log(err)
-               scope.$emit('stopSpinner')
-            })
-         }
-         else {
-            scope.view = scope.DB[nameDb].value;
-         }
+               .success(function(data) {
+                  scope.DB[nameDb].value = data;
+                  scope.numProducts[nameDb] = data.length;
+                  scope.view = data;
+                  scope.$emit('stopSpinner')
+               })
+               .error(function(err) {
+                  scope.$emit('stopSpinner')
+                  $rootScope.$emit('showWebAssistant', "сбой на сервере. обратитесь к сис. админу");
+               })
+         }  
       },
       deleteProduct : function(id, scope) {
+         scope.$emit('startSpinner')
          $http.post(scope.url + "/deleteProduct", {"id" : id, "productType" : scope.currentDb.name})
          .success(function(doc) {
             if (doc.success) {
+               scope.$emit('stopSpinner')
                $rootScope.$emit('showWebAssistant', "продукт удален из БД");
             }
             else {
+               scope.$emit('stopSpinner')
                $rootScope.$emit('showWebAssistant', "сбой на сервере. обратитесь к сис. админу");
             }
          })
-         .error(function(err) {console.log(err)})
+         .error(function(err) {
+            $rootScope.$emit('showWebAssistant', "сбой на сервере. обратитесь к сис. админу");
+         })
+      },
+      getCurrentProductComments : function(scope) { 
+         var arrComments;
+         var idComments = scope.product_val.comments.idComments;
+         if (!scope.editCurrProductComments) {
+             $rootScope.$emit('startSpinner')
+             $http.post(scope.url + '/getCurrentProductComments', {
+               'idCommentsDb' : idComments,
+               'kindProduct' : scope.product_kind})
+               .success(function(result) {
+                  arrComments = result.comments;
+                  for (var i = 0; i < arrComments.length; i++) {
+                     arrComments[i].prettyDate = productsInfoFactory.prettyDatePublic(arrComments[i].dateMilisec)
+                  }
+                  scope.editCurrProductComments = arrComments;
+                  scope.toggleComments = true;
+                  scope.btnCommentsName = 'Скрыть комментарии';
+                  $rootScope.$emit('stopSpinner')
+               })
+               .error(function(err) {
+                  $rootScope.$emit('stopSpinner')
+                  scope.$emit('showWebAssistant', "сбой на сервере, повторите позже");
+               }) 
+         }
+         else {
+            if (scope.toggleComments) {
+               scope.toggleComments = false;
+               scope.btnCommentsName = 'Показать комментарии';
+            }
+            else {
+               scope.toggleComments = true;
+               scope.btnCommentsName = 'Скрыть комментарии';
+            }
+         } 
+      },
+      editCurrProductDeleteComment : function(idComment, scope) { 
+         var idProduct = scope.product_val._id
+         var idCommentsDb = scope.product_val.comments.idComments;
+             $rootScope.$emit('startSpinner')
+             $http.post(scope.url + '/deleteProductComment', {
+               'idProduct' : scope.product_val._id,
+               'idCommentsDb' : scope.product_val.comments.idComments,
+               'kindProduct' : scope.product_kind,
+               'idThisComment' : idComment})
+               .success(function(result) {
+                  'use strict';
+                  var arrComments;
+                  var i;
+                  var userName;
+                  var date;
+                  if (result.success) {
+                     arrComments = scope.editCurrProductComments;
+                     for (i = 0; i < arrComments.length; i++) {
+                        if (arrComments[i]._id === idComment) {
+                           userName = arrComments[i].user;
+                           date = arrComments[i].prettyDate;
+                           arrComments.splice(i, 1);
+                           break;
+                        }   
+                     }
+                     $rootScope.$emit('stopSpinner')
+                     scope.$emit('showWebAssistant', "Комментарий пользователя - " + userName + ", от " + date + " удален");
+                  }
+                  else {
+                     $rootScope.$emit('stopSpinner')
+                     scope.$emit('showWebAssistant', "сбой на сервере, повторите позже");
+                  }
+               })
+               .error(function(err) {
+                  $rootScope.$emit('stopSpinner')
+                  scope.$emit('showWebAssistant', "сбой на сервере, повторите позже");
+               }) 
       },
       validationAddColor : function(scope) {
          'use strict'
          var 	regExp,
                validColor;
          regExp = new RegExp('^#(?:[0-9a-fA-F]{3}){1,2}$');
-         console.log(scope.product_newColour)
          validColor = regExp.test(scope.product_newColour);	
-         console.log(validColor)
          if (validColor) {
             scope.valid.btn_addColor = true;
          }
@@ -170,46 +244,38 @@ angular.module('AdminProductsCtrl')
          var prop;
          var valid = true;
          var i;
-         for(prop in scope.valid) {
-            if (scope.valid[prop].value === false) {
-               valid = false;
-               $rootScope.$emit('showWebAssistant', "введите данные согласно формата");
-               break; 
-            }
-         }
-         if (valid) {
-            $rootScope.$emit('startSpinner')
-            $http.post(scope.url + "/setProductDb", scope.product_val)
-               .success(function(doc) {
-                  if (doc.id) {  
-                     scope.product_id = doc.id
-                     scope.product_kind = scope.product_val.kind;
-                     $rootScope.$emit('stopSpinner')
-                     $rootScope.$emit('showWebAssistant', "продукт добавлен в базу, добавьте фотографии");  
-                  }
-                  else {
-                     $rootScope.$emit('stopSpinner')
-                      $rootScope.$emit('showWebAssistant', "сбой на сервере, повторите позже"); 
-                  }
-               })
-               .error(function(err) {
+         $rootScope.$emit('startSpinner')
+         $http.post(scope.url + "/setProductDb", scope.product_val)
+            .success(function(doc) {
+               if (doc.id) {  
+                  scope.product_id = doc.id
+                  scope.product_kind = scope.product_val.kind;
                   $rootScope.$emit('stopSpinner')
-                  $rootScope.$emit('showWebAssistant', "сбой на сервере, повторите позже");
-               })
-         }
-         else {
-             $rootScope.$emit('showWebAssistant', "сбой на сервере, повторите позже");
-         }
+                  $rootScope.$emit('showWebAssistant', "продукт добавлен в базу, добавьте фотографии");  
+                  
+                  var scrollBottom = $(window).scrollTop() + $(window).height();
+                  $('body').animate({ 'scrollTop': scrollBottom}, 4000)
+                  // scrollBottom = $(window).scrollTop() + $(window).height();
+               }
+               else {
+                  $rootScope.$emit('stopSpinner')
+                  $rootScope.$emit('showWebAssistant', "сбой на сервере, повторите позже"); 
+               }
+            })
+            .error(function(err) {
+               $rootScope.$emit('stopSpinner')
+               $rootScope.$emit('showWebAssistant', "сбой на сервере, повторите позже");
+            })
       },
       setImgDb : function(scope, Upload, typeAction) {
+         //two action - "add" and "edit" + upload images
          'use strict';
          var 	prop;
          var   allImg;
          var   id;
-         var   counterForResetAllValues;
          var   valid;
-         var   interval ;
-         var   counterForResetAllValues = 0;
+         var   interval_ ;
+         var   counterAddImg;
          var   kindProduct;
          var   idImg;
          allImg = scope.product_img;
@@ -225,21 +291,29 @@ angular.module('AdminProductsCtrl')
             }
          }
          else {
-            valid = true;
+            for (prop in allImg) {
+               if(allImg[prop].file) {
+                  valid = true
+                  break;
+               } 
+               else { 
+                  valid = false; 
+               }
+            }
          }
          if (valid) {
-            interval = setInterval(function() {
-               if (counterForResetAllValues == 0) {
-                  clearInterval(interval)
-                  $rootScope.$emit('showWebAssistant', "Все фотографии добавлены в БД");
-                  $timeout(function() {
-                      $('html, body').animate({scrollTop: 0},1500);
-                  },1500)
-                  $timeout(function() {
-                     clearAllValues(scope)
-                  },2000)
+            counterAddImg = 0;
+            interval_ = $interval(function() {
+               if (counterAddImg == 0) {
+                  $interval.cancel(interval_)
+                  if (typeAction === 'add') { 
+                     $rootScope.$emit('showWebAssistant', "фото добавлены в БД, изменения будут доступны в следующей сессии");
+                  }
+                  else { 
+                     $rootScope.$emit('showWebAssistant', "фотографии заменены, изменения будут доступны в следующей сессии");
+                  }
                }
-            }, 100)
+            }, 500)
             id = scope.product_id;
             kindProduct = scope.product_kind
             for(prop in allImg) {
@@ -249,11 +323,9 @@ angular.module('AdminProductsCtrl')
                else {
                   idImg = undefined;
                }
-               
                if (allImg[prop].file) {
                   allImg[prop].load_img_begin = true;
-                  counterForResetAllValues++
-                  console.log('da')
+                  counterAddImg += 1;
                   Upload.upload({'url': scope.url + "/setImgAdmin_" + prop + "_" + kindProduct, 'data': { 
                      'idImg' : idImg,
                      'id': id,
@@ -265,13 +337,18 @@ angular.module('AdminProductsCtrl')
                      .then(function(res) {
                         allImg[res.data.kindImg].load_img_begin = false;
                         allImg[res.data.kindImg].loaded = true;
-                        counterForResetAllValues--
+                        counterAddImg -= 1;
                      })
                }
             }
          }	
          else {
-            $rootScope.$emit('showWebAssistant', "Вы добавили не все фотографии");
+            if (typeAction === 'add') { 
+               $rootScope.$emit('showWebAssistant', "Вы добавили не все фотографии");
+            }
+            else {  
+               $rootScope.$emit('showWebAssistant', "Вы не добавили ни одного изображения для замены"); 
+            }
          }
       },
       getNumberDbProducts : function(scope) {
@@ -285,10 +362,13 @@ angular.module('AdminProductsCtrl')
                   $rootScope.$emit('showWebAssistant', 'в базе данных нет записей, добавьте бд')
                   $rootScope.$emit('stopSpinner')
                   $rootScope.$emit('setCtrlDescr', 'admin-products')
+                   scope.summProducts()
                }
                else {
                   scope.numProducts.laptop = result.laptop;
                   scope.numProducts.tablet = result.tablet;
+                  scope.summProducts()
+
                   $rootScope.$emit('stopSpinner')
                   $rootScope.$emit('setCtrlDescr', 'admin-products')
                }
@@ -325,8 +405,10 @@ angular.module('AdminProductsCtrl')
                   $rootScope.$emit('showWebAssistant', "Все БД с товарами, комментариями, изображениями очищены");
                   scope.numProducts.laptop = 0;
                   scope.numProducts.tablet = 0;
+                  scope.summProducts()
                } 
                else {
+                  console.log('da')
                   $rootScope.$emit('stopSpinner')
                   $rootScope.$emit('showWebAssistant', "сбой на сервере, обратитесь к сис. админу");
                }           
@@ -335,24 +417,46 @@ angular.module('AdminProductsCtrl')
       },
       setRandomProductDb : function(numberRandom, scope) {
          if (numberRandom) {
-            if (numberRandom>30 || numberRandom<=0 || (numberRandom%1 != 0)) {
-               $rootScope.$emit('showWebAssistant', "не более 30 шт за один раз, число положительное, не равное 0, целое");  
+            if (numberRandom<=0 || (numberRandom % 1 != 0 || numberRandom>50)) {
+               $rootScope.$emit('showWebAssistant', "число должно быть меньше 50, положительное, не равное 0, целое");
             }
             else {
-               $rootScope.$emit('startSpinner')
-               $http.post(scope.url + "/setRandomsProductDb", {number : numberRandom})
-                  .success(function(doc) {
-                     if (doc.success) {
-                        $rootScope.$emit('stopSpinner')
-                        $rootScope.$emit('showWebAssistant', 'все ' + numberRandom + ' продуктов добавлены');
-                     }
+               if (numberRandom>scope.balansInDb) {
+                   $rootScope.$emit('showWebAssistant', "Вы можете добавить еще - " + scope.balansInDb + ", но не более");
+               }
+               else {
+                  //create animate counter
+                  var elem = document.createElement('span');
+                  $(elem).css({
+                     'position': 'absolute',
+                     'top': '20%',
+                     'left': '50%',
+                     'font-size' : '3em',
+                     '-webkit-transform':'translate(-50%,-50%)',
+                     'transform':'translate(-50%,-50%)'
                   })
-                  .error(function(err) {
-                  $rootScope.$emit('stopSpinner')
-                  $rootScope.$emit('showWebAssistant', "возможен сбой на сервере, обратитесь к сис. админу");
-                  })
+                  $('#bg_spinner').append(elem)
+                  $rootScope.$emit('startSpinner')
+                  $http({
+                     'url': scope.url + "/setRandomsProductDb",
+                     'method': 'POST',
+                     'data' : {number : numberRandom},
+                     'timeout' : 900000 })
+                     .success(function(doc) {
+                        if (doc.success) {
+                           scope.numRandomProducts = undefined;
+                           $('#bg_spinner').find('span').remove()
+                           $rootScope.$emit('stopSpinner')
+                           $rootScope.$emit('showWebAssistant', 'все ' + numberRandom + ' продуктов добавлены');
+                        }
+                     })
+                     .error(function(err) {
+                        $('#bg_spinner').find('span').remove()
+                     $rootScope.$emit('stopSpinner')
+                     $rootScope.$emit('showWebAssistant', "возможен сбой на сервере, обратитесь к сис. админу");
+                     })  
+               }
             }
-            
          }
          else {
              $rootScope.$emit('showWebAssistant', "введите колличество продуктов");  
@@ -366,64 +470,46 @@ angular.module('AdminProductsCtrl')
          else {
             scope.numProducts[data.kind]++ 
          }
-         if (data.counter % 5 == 0     &&   data.counter != data.delta) {
+         if ( data.counter % 25 == 0    &&   data.counter != data.delta ) {
             $rootScope.$emit('showWebAssistant', 'осталось - ' + data.counter + ' продуктов из ' + data.delta)
          }
+          $('#bg_spinner').find('span').text(data.counter)
+         scope.summProducts()
       },
       editProduct : function(id, scope) {
-      scope.productAction = {
-            search : false,
-            add : false,
-            edit : true
-         }           
-         // $http.post(scope.url + "/editProduct", {"id" : id, "productType" : scope.currentDb.name})
-         //    .success(function(doc) {
-         //       scope.currentDb.name = doc.kind;
-         //       scope.product_val.kind = doc.kind;
-         //       scope.product_val.brand = doc.brand;
-         //       scope.product_val.model = doc.model;
-         //       scope.product_val.guarantee = doc.guarantee;
-         //       scope.product_val.price = doc.price;
-         //       scope.product_val.operSystem = doc.operSystem;
-         //       scope.product_val.cpu = doc.cpu;
-         //       scope.product_val.numCores = doc.numCores;
-         //       scope.product_val.memory = doc.memory;
-         //       scope.product_val.ramMemory = doc.ramMemory;
-         //       scope.product_val.screenDiagonal = doc.screenDiagonal;
-         //       scope.product_val.screenResolution = doc.screenResolution;
-         //       scope.product_val.frontCamera = doc.frontCamera;
-         //       scope.product_val.mainCamera = doc.mainCamera;
-         //       scope.product_val.battery = doc.battery;
-         //       scope.product_val.colours = doc.colours;
-         //       scope.productAction = {
-         //          search : false,
-         //          add : false,
-         //          edit : true
-         //       }
-         //       scope.product_id = doc._id;
-         //    })
-         //    .error(function(err) {
-         //       console.log(err)
-
-         //    })
          var i;
          var prop;
          var arr = scope.DB[scope.currentDb.name].value;
          var arrLength = arr.length;
+         scope.productAction.search = false;
+         scope.productAction.add = false;
+         scope.productAction.edit = true;
          for (i = 0; i < arrLength; i++) {
-            if (arr[i]._id) {
+            if (arr[i]._id === id) {
                scope.product_val = arr[i];
                scope.product_id = arr[i]._id;
                scope.product_kind = arr[i].kind;
                break;
             } 
-         }
-         for (prop in scope.product_img) {
-            scope.product_img[prop].file = undefined;
-         }
-         console.log(scope.product_val)
-         
-         // scope.product_id = doc._id;
+         }         
+      },
+      updateProductDb : function(scope) {
+         $rootScope.$emit('startSpinner')
+         $http.post(scope.url + "/updateProduct", scope.product_val)
+            .success(function(result) {
+               if (result.success) {
+                  $rootScope.$emit('stopSpinner') 
+                  $rootScope.$emit('showWebAssistant', 'Информация обновлена') 
+               }
+               else {
+                  $rootScope.$emit('stopSpinner') 
+                  $rootScope.$emit('showWebAssistant', "возможен сбой на сервере, обратитесь к сис. админу")
+               }
+            })
+            .error(function(err) {
+               $rootScope.$emit('stopSpinner')
+               $rootScope.$emit('showWebAssistant', "возможен сбой на сервере, обратитесь к сис. админу")
+            })
       },
       addPreparedProduct : function(scope) {
          if (scope.togglePreparedProduct) {
@@ -470,6 +556,12 @@ angular.module('AdminProductsCtrl')
             scope.product_val.sale.descript = undefined
             delete scope.product_val.raiting;
             scope.togglePreparedProduct = true;
+            for (var prop in scope.product_img) {
+               scope.product_img[prop].file = undefined;
+               scope.product_img[prop].load_img_begin = false;
+               scope.product_img[prop].loaded  = false;
+            }
+            scope.product_id = undefined;
             validation(scope)
          }  
       }

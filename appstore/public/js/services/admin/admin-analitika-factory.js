@@ -14,10 +14,8 @@ angular.module('AdminAnalitikaCtrl')
 			var widthPercent;
 			var arrNameMonth = ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь']
 			$rootScope.$emit('startSpinner')
-			console.log('s')
 			$http.get(scope.url.getDb)
 				.success(function(result) {
-					console.log('sssss')
 					if ( result.error ) {
 						$rootScope.$emit('showWebAssistant', "сбой на сервере, повторите позже")
 					}
@@ -28,9 +26,7 @@ angular.module('AdminAnalitikaCtrl')
 							month = JSON.parse(arrMonthJSON[i])
 							arrMonth.push(month)
 						}
-
 						arrMonth.push(result.presentMonth[0])
-						// console.log(arrMonth)
 						// set name month and find maximum value visits
 						maxValueVisits = 0
 						for (i = 0; i < arrMonth.length; i++) {
@@ -54,7 +50,6 @@ angular.module('AdminAnalitikaCtrl')
 		},
 		showDetails : function(indexMonth, scope) {
 			'use strict';
-			
 			var currMonth = scope.dbYear[indexMonth];
 			var currMonthDays = currMonth.days;
 			var currMonthDaysLength = currMonthDays.length;
@@ -80,8 +75,6 @@ angular.module('AdminAnalitikaCtrl')
 				scope.bottom.visits[i] =     { 'bottom' : Math.ceil( (currMonthDays[i].visits     / scope.maximumValueVisitsMonth) * 300) + "px"};  
 				scope.bottom.uniqVisits[i] = { 'bottom' : Math.ceil( (currMonthDays[i].uniqVisits / scope.maximumValueVisitsMonth) * 300) + "px"};
 			}
-			console.log(currMonthDays)
-			console.log(scope.bottom.visits)
 			scope.activeView.currentMonth = true;
 			scope.activeView.arhivMonth = false;
 		}			

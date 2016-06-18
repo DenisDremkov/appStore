@@ -2,11 +2,12 @@
 
 angular.module('ProductsMainCtrl',[])
 
-.controller('productsMainCtrl', ['$scope', '$rootScope', 'productsMainFactory', function($scope, $rootScope, productsMainFactory) {
+.controller('productsMainCtrl', ['$scope', '$rootScope', 'productsMainFactory', '$timeout', function($scope, $rootScope, productsMainFactory, $timeout) {
 	'use strict';
 	//MAIN DATA STORE
 	
 	$scope.data = {
+		firstLoadDb : true,
 		numberProductsView : 8,
 		//===============CONSTANTS==================================================
 		ALL_PRODUCTS : {}, 																										
@@ -14,24 +15,27 @@ angular.module('ProductsMainCtrl',[])
 		// values for checkbox in "search"
 		all_brends : undefined,	
 		//===============CURRENT PRODUCTS===========================================
-		currentTypeProducts : "tablet",
+		currentTypeProducts : "laptop",
 		// full list current products
 		currentProducts : undefined,												
-		// all brends for current products
+		// all brends for current kind products
 		brendsThisProducts : undefined, 											
 		//	value of last page in pagination
 		amountPages : undefined,													
 		// current page in pagination
 		currentPage : undefined,													
 		//===================SALE=======================================================
-		carouselSale : [1,2,3,4,5],
+		carouselShow : false,
+		carouselView : undefined,
 		//===================SEARCH======================================================
 		//sliders created in Search-controller	
 		slidersView : undefined,													
 		//filter
 		search : {
-			searchBrend : undefined,
 			searchModel : undefined
+		},
+		orderByListFromSearch : {
+			nameProp : '-raiting.val'
 		},
 		productsWithSale : false,
 		//====================COMPARE====================================================	
@@ -42,7 +46,7 @@ angular.module('ProductsMainCtrl',[])
 		currentProductInfo : undefined, 		
 		//url
 		url : {
-			startData : 'http://localhost:3000/getStartData',
+			getDb : 'http://localhost:3000/getDb',
 			bar : '../../template/products/products-sale.html',
 			getProducts : 'http://localhost:3000/get',
 			getComments : 'http://localhost:3000/getComments',
@@ -53,7 +57,7 @@ angular.module('ProductsMainCtrl',[])
 		},
 		//===================ACTIVE ITEMS====================================================
 		activeItems : {
-			currentProducts : "tablet",
+			currentProducts : "laptop",
 			productsBar : "sale",
 			mainList : true
 		},
@@ -67,15 +71,15 @@ angular.module('ProductsMainCtrl',[])
 	$scope.view_mainList = undefined;
 	
 	//after first load page  create view (tablets)
-	productsMainFactory.getStartData($scope);
+	productsMainFactory.getData('laptop', $scope);
 	
 	//toggle products (tablet, laptop)
 	$scope.toggleProducts = function(typeProducts, event) {
-		productsMainFactory.toggleProducts(typeProducts, event, $scope)
-		if ($scope.data.activeItems.productsBar === "search") {
-			$scope.$broadcast('createNewSliders');
-			$scope.$broadcast('createNewCheckox');
-		}
+		$scope.data.compareProducts = [];
+		$scope.data.checkedButtonsCompare = {};
+		$scope.data.currentProductInfo = undefined;
+		productsMainFactory.toggleBar('sale', $scope);
+		productsMainFactory.getData(typeProducts, $scope, event)
 	};
 	//toggle bar (sale, search, compare, info)
 	$scope.toggleBar = function(typeBar, event) {
@@ -105,10 +109,21 @@ angular.module('ProductsMainCtrl',[])
 			$scope.data.activeItems.mainList = false;
 		}
 	})
-	
-	//от каждого скоупа по отдельности
-	$scope.$on('newPageFromPagination', function() {
-		productsMainFactory.createView($scope)
+	// $scope.carouselDuration = 3;
+	// $scope.stopCarousel = function(action) {
+	// 	if (action === 'enter') {
+	// 		console.log('ent')
+	// 		$scope.carouselDuration = 1000;
+	// 	}
+	// 	else {
+	// 		console.log('leave')
+	// 		$scope.carouselDuration = 3
+	// 	}
+		
+	// }
+	// change view от каждого скоупа по отдельности
+	$scope.$on('newPageFromPagination', function(e, page) {
+		productsMainFactory.createView($scope, page)
 	});
 	$scope.$on('newValuesCheckbox', function() {
 		productsMainFactory.createView($scope)
@@ -133,7 +148,20 @@ angular.module('ProductsMainCtrl',[])
 			}
 		}
 	})
+	//watch for change number compare products that animate number
+	$scope.$watch('data.compareProducts.length', function(newVal, oldVal) { // rootscope
+		if (newVal && newVal > oldVal) {
+			$timeout(function() {
+				$('#animate_number_compare').addClass('animate_number_compare')
+			},1000)
+			$timeout(function() {
+				$('#animate_number_compare').removeClass('animate_number_compare')
+			},3000)
+		}
+	})
+	
 	$scope.toggleProductBasket = function(product) {
+		console.log('da')
 		if($rootScope.rootUser.rights === 'user') {
 			productsMainFactory.toggleProductBasket(product, $scope)} 
 		else { $rootScope.$emit('showWebAssistant', "Вам необходимо зарегестрироваться") }

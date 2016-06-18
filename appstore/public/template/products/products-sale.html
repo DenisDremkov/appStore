@@ -2,11 +2,22 @@
 <div id="goods_sale">
 <!-- carousel -->
 	<!-- {{data.carouselSale[0]}} -->
-	<ul rn-carousel class="image" rn-carousel-easing = "easeInOutQuad"  rn-carousel-duration = "2000" rn-carousel-controls rn-carousel-auto-slide = "5" rn-carousel-controls-allow-loop>
-		<li ng-repeat="items in data.carouselSale">
-			<div class="layer">
-			adfasdf
-				<img ng-src="../img/big_img/laptop/573953d07acf7a7c1e8794e1/bigImg.png" alt="">
+	<ul id="main_sale_carousel" ng-if="data.carouselShow"  rn-carousel class="image" rn-carousel-easing = "easeInOutQuad"  rn-carousel-duration = "2000" rn-carousel-controls rn-carousel-auto-slide = "6" rn-carousel-controls-allow-loop rn-carousel-transition="fadeAndSlide">
+		<li ng-repeat="product in data.carouselView">
+			<div class="layer row">
+				<div class="col-xs-5">
+					<div class="img_wrap">
+						<img ng-src="./img/products/slide1/{{product.kind}}/{{product.img.slide1}}" alt="">
+					</div>
+				</div>
+				<div class="col-xs-7">
+					<div class="descript_sale">
+						<h2>{{product.brand}}  {{product.model}}</h2>
+						<h3>Скидка <span>{{product.sale.discount}}</span> %</h2>
+						<p><span>Акционное предложение</span> {{product.sale.descript}}</p>
+						<button ng-click = "showInfo(product)">подробнее</button>
+					</div>
+				</div>
 			</div>
 		</li>
 	</ul>

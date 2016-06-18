@@ -41,10 +41,10 @@ schema_user = new Schema ({
 		price : Number,
 		imgSmall : String
 	}],
-	// "comments" : [],
 	"raitings" : [String],
 	"avatarId" : String,
-	"commentsId" : String
+	"commentsId" : String,
+	"adminInSession" : Boolean
 });
 schema_comments_users = new Schema ({
 	idUser : String,
@@ -138,9 +138,6 @@ schema_laptop   = new Schema ({
 		num : Number,
 		sum : Number
 	},
-	// путь: при сохранении коментария  = берет ид продукта заходит 
-	// в основную базу смотрит ид в базе коментов. если его нет то 
-	// создает новую запись и возвращается и сохраняет новый ид комент в основной базе
 	comments : {
 		summ : Number,
 		idComments : String
@@ -155,10 +152,8 @@ schema_comments_laptop = new Schema ({
 	}]	
 });
 schema_allBrend = new Schema ({
-	"laptop" : {},
-	"tablet" : {},
-	"pc" : {},
-	"phone" : {}
+	"laptop" : [String],
+	"tablet" : [String]
 });
 schema_minAndMaxVal = new Schema ({
 	"laptop": {
@@ -247,9 +242,6 @@ schema_minAndMaxVal = new Schema ({
 	}
 })
 
-
-
-
 schema_analitika_day = new Schema ({
 	"day" : Number,
 	"visits" : Number,
@@ -288,7 +280,7 @@ model_comments_users = mongoose.model('comments_db_users', schema_comments_users
 
 module.exports = {	
 	"user" : model_user,
-	"brends" : model_allBrend,
+	"brands" : model_allBrend,
 	"minAndMaxVal" : model_minAndMax,
 	"tablet" : model_tablet,
 	"laptop" : model_laptop,
@@ -309,4 +301,3 @@ module.exports = {
 	// "sale" : model_sale,
 // schema_sale,
 // model_sale,
-

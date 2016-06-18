@@ -1,6 +1,6 @@
 angular.module('AdminMainCtrl',[])
 
-.controller('adminMainCtrl', ['$scope', '$http', 'adminMainFactory', function($scope,  $http, adminMainFactory) {
+.controller('adminMainCtrl', ['$scope', '$http', function($scope,  $http) {
 	'use strict';
 	$scope.currentTab = 'products';
 	$scope.db = {
@@ -10,7 +10,6 @@ angular.module('AdminMainCtrl',[])
 	};
 	$scope.url = 'http://localhost:3000/get';
 	$scope.currentTemplate = 'template/admin/admin-products.html';
-	// getStartData
 	$scope.toggleTabs = function(typeDb, event) {
 		event.preventDefault();
 		switch (typeDb) {
@@ -26,10 +25,11 @@ angular.module('AdminMainCtrl',[])
 				$scope.currentTab = 'analitika';
 				$scope.currentTemplate = 'template/admin/admin-analitika.html';
 				break;
-		}
-	}
-}]);
-	// случайные значения включительно по сегодняшний или вчерашний день
+	}}}]);
+
+
+
+// случайные значения включительно по сегодняшний или вчерашний день
 // var setAllArhivRandomValues = function  () {	
 // 	'use strict';
 // 	var objDay;

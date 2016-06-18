@@ -1,13 +1,11 @@
 <div id = "compare_wrapper" ng-controller = "productsCompareCtrl">
 	<table class="table table-hover" >
-		рейтинг с косяками!!!!  обьект!!!!
-		и комментарии не по порядку!!!!!!!!!!!!!!!
 		<tbody>
 			<tr>
 
 				<td></td>
 				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse" class="img_wrap">
-					<img ng-src="/img/small/{{product.img.small}}" alt="{{product.brand}} {{product.model}}">
+					<img ng-src="/img/products/small/{{product.kind}}/{{product.img.small}}" alt="{{product.brand}} {{product.model}}">
 				</td>
 			</tr>
 			<tr class="brand">
@@ -123,8 +121,15 @@
 			<tr>
 				<td></td>
 				<td ng-repeat = "product in arrCompareProducts | orderBy : sortItem : reverse">
-					<button ng-click = "deleteCompare(product._id)" title="убрать из списка"><i class="fa fa-trash" aria-hidden="true"></i></button>
-					<button ng-click = "addBasket(product._id)" title="добавить в корзину"><i class="fa fa-shopping-basket" aria-hidden="true"></i></button>
+					<button class="btn_compare_bottom" ng-click = "deleteCompare(product._id)" title="убрать из списка"><i class="fa fa-trash" aria-hidden="true"></i></button>
+					
+					<button class="btn_compare_bottom"  ng-click = 'toggleProductBasket(product)' title="добавить в корзину">
+						<i  ng-class="(data.checkedButtonsBasket[product._id])? 'checked_btn_basket_compare' : '' " class="fa fa-shopping-basket" aria-hidden="true"></i>
+					</button>
+					
+
+
+					<button class="btn_compare_bottom" ng-click = "showInfo(product)" title="подробная информация"><i class="fa fa-info" aria-hidden="true"></i></button>
 				</td>
 			</tr>
 		</tbody>

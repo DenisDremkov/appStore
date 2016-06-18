@@ -39,7 +39,9 @@ module.exports = function(req, res) {
 							sendAdminMail(err)
 						}
 						if (doc) {
-							res.send({'kindImg': kindImg})
+							setTimeout(function() {
+								res.send({'kindImg': kindImg})
+							}, 1000)
 						} 
 					});
 				});
